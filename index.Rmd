@@ -1,5 +1,17 @@
 ---
-title: "Index"
-output: html_document
+title: "BIOL6994-096 Intro to R"
+author: "José Carlos Zayas Viera"
+date: "`r format(Sys.time(), '%Y-%b-%d, %I:%M %p')`"
+output:
+  prettydoc::html_pretty:
+  theme: cayman
+  highlight: github
 ---
 
+<div style="text-align: center;">
+  <img src="image1.jpeg" width="300" height="320"/>
+</div>
+
+# About me
+
+- My name is Jose C Zayas. I am in my 1st year of my masters program in Biology. I work with Dr. Clara Isaza Brando in her BioOptimatics Research Group. 

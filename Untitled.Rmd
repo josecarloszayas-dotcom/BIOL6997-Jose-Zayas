@@ -1,6 +1,6 @@
 ---
 title: "Intro to R"
-author: "Ramon Zayas"
+author: "Jose C Zayas"
 date: "`r Sys.Date()`"
 output:
   prettydoc::html_pretty: 
