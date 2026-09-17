@@ -1,0 +1,9 @@
+---
+title: "Assignment 1"
+author: "Jose C Zayas"
+date: "r format(Sys.time(), '%Y-%b-%d, %I:%M %p')" 
+output: html_document
+---
+
+## Assignments
+### [Assignment Submission](Asignments/Assignment-1.html)

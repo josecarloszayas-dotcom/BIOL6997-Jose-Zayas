@@ -1,7 +1,7 @@
 ---
-title: "BIOL6994-096 Intro to R"
+title: "BIOL6994-096 Introduction to R for Biologists"
 author: "José Carlos Zayas Viera"
-date: "`r format(Sys.time(), '%Y-%b-%d, %I:%M %p')`"
+date: "r format(Sys.time(), '%Y-%b-%d, %I:%M %p')"
 output:
   prettydoc::html_pretty:
     theme: tactile
@@ -20,4 +20,7 @@ output:
 
 - I am working towards to be a  Bioinformatics specialist and contribute to a new age of sequencing technologies and genome visualization 
 
-- For this R class my objectives are in the extraction and manipulation of data of Dengue and Lupus datasets in an effort to find a mechanistic link between viral inflammation signals and autoimmunity. 
+- For this R class my objectives are in the extraction and manipulation of data of Dengue and Lupus datasets in an effort to find a mechanistic link between viral inflammation signals and autoimmunity.
+
+### R Tutorials Prompts: 
+[HomeWork 1](assignments/assignments_1/Assigment-1.html)
