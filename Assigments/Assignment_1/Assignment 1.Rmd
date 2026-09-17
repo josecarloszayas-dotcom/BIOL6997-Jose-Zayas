@@ -4,6 +4,3 @@ author: "Jose C Zayas"
 date: "`r Sys.Date()`"
 output: html_document
 ---
-
-## Assignments
-### [Assignment Submission](Asignments/Assignment-1.html)

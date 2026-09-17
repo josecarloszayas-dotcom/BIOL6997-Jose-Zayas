@@ -23,4 +23,4 @@ output:
 - For this R class my objectives are in the extraction and manipulation of data of Dengue and Lupus datasets in an effort to find a mechanistic link between viral inflammation signals and autoimmunity.
 
 ### R Tutorials Prompts: 
-[HomeWork 1](assignments/assignments_1/Assigment-1.html)
+[HomeWork 1](Assignments/Assignment_1/Assigment-1.html)
