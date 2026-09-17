@@ -4,8 +4,8 @@ author: "José Carlos Zayas Viera"
 date: "`r format(Sys.time(), '%Y-%b-%d, %I:%M %p')`"
 output:
   prettydoc::html_pretty:
-  theme: cayman
-  highlight: github
+    theme: tactile
+    highlight: github
 ---
 
 <div style="text-align: center;">
