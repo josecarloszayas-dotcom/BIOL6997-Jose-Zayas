@@ -11,7 +11,6 @@
 
 <meta name="author" content="Jose C Zayas" />
 
-<meta name="date" content="2026-09-17" />
 
 <title>Assignment 1</title>
 
@@ -352,12 +351,191 @@ display: none;
 
 <h1 class="title toc-ignore">Assignment 1</h1>
 <h4 class="author">Jose C Zayas</h4>
-<h4 class="date">2026-09-17</h4>
+<h4 class="date">2026-Sep-18, 12:17 PM</h4>
 
 </div>
 
 
+<div id="r-tutorial-1" class="section level1">
+<h1>R Tutorial 1</h1>
+<div id="assigning-values" class="section level2">
+<h2>Assigning values</h2>
+<div id="q1.-create-an-object-called-height-with-the-value-175.-print-it.-crea-un-objeto-llamado-height-con-el-valor-175.-muéstralo-en-pantalla." class="section level5">
+<h5>Q1. Create an object called height with the value 175. Print it.
+(Crea un objeto llamado height con el valor 175. Muéstralo en
+pantalla.)</h5>
+<p><br></p>
+</div>
+<div id="a1." class="section level5">
+<h5>A1.</h5>
+<pre class="r"><code>height &lt;- 175
+height</code></pre>
+<pre><code>## [1] 175</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="simple-math" class="section level2">
+<h2>Simple Math</h2>
+<div id="q2.-calculate-the-result-of-25-4---10.-calcula-el-resultado-de-25-4---10." class="section level5">
+<h5>Q2. Calculate the result of 25 * 4 - 10. (Calcula el resultado de 25
+* 4 - 10.)</h5>
+<p><br></p>
+</div>
+<div id="a2." class="section level5">
+<h5>A2.</h5>
+<pre class="r"><code>Result &lt;- 25 *4-10
+Result</code></pre>
+<pre><code>## [1] 90</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="using-functions" class="section level2">
+<h2>Using functions</h2>
+<div id="q3.-use-the-function-sqrt-to-calculate-the-square-root-of-81.-usa-la-función-sqrt-para-calcular-la-raíz-cuadrada-de-81." class="section level5">
+<h5>Q3. Use the function sqrt() to calculate the square root of 81. (Usa
+la función sqrt() para calcular la raíz cuadrada de 81.)</h5>
+</div>
+<div id="a3." class="section level5">
+<h5>A3.</h5>
+<pre class="r"><code>Result &lt;- sqrt(81)
+Result</code></pre>
+<pre><code>## [1] 9</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="character-objects" class="section level2">
+<h2>Character objects</h2>
+<div id="q4.-assign-the-phrase-r-is-fun-to-an-object-called-message.-print-it.-asigna-la-frase-r-is-fun-a-un-objeto-llamado-message.-muéstralo." class="section level5">
+<h5>Q4. Assign the phrase “R is fun!” to an object called message. Print
+it. (Asigna la frase “R is fun!” a un objeto llamado message.
+Muéstralo.)</h5>
+<p><br></p>
+</div>
+<div id="a4." class="section level5">
+<h5>A4.</h5>
+<pre class="r"><code>message &lt;- &quot;R is fun!&quot;
+message</code></pre>
+<pre><code>## [1] &quot;R is fun!&quot;</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="object-manipulation" class="section level2">
+<h2>Object manipulation</h2>
+<div id="q5.-create-two-objects-a---10-and-b---5.-calculate-their-sum-and-store-it-in-c.-crea-dos-objetos-a---10-y-b---5.-calcula-su-suma-y-guárdala-en-c." class="section level5">
+<h5>Q5. Create two objects a &lt;- 10 and b &lt;- 5. Calculate their sum
+and store it in c. (Crea dos objetos a &lt;- 10 y b &lt;- 5. Calcula su
+suma y guárdala en c.)</h5>
+<p><br></p>
+</div>
+<div id="a5." class="section level5">
+<h5>A5.</h5>
+<pre class="r"><code>a &lt;- 10
+b &lt;- 5
+c &lt;- a + b
+c</code></pre>
+<pre><code>## [1] 15</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="logical-comparison" class="section level2">
+<h2>Logical comparison</h2>
+<div id="q6.-test-whether-15-is-greater-than-20.-verifica-si-15-es-mayor-que-20." class="section level5">
+<h5>Q6. Test whether 15 is greater than 20. (Verifica si 15 es mayor que
+20.)</h5>
+<p><br></p>
+</div>
+<div id="a6." class="section level5">
+<h5>A6.</h5>
+<pre class="r"><code>a &lt;- 15
+b &lt;-20
+c &lt;- &quot;15 is bigger than 20&quot;
+d &lt;- &quot;20 is bigger than 15&quot;
+if (a&gt;b) {
+} else if (b&gt;a) {
+  Result &lt;- d
+  } else {
+    Result &lt;- c
+  }
 
+Result</code></pre>
+<pre><code>## [1] &quot;20 is bigger than 15&quot;</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="checking-classes" class="section level2">
+<h2>Checking classes</h2>
+<div id="q7.-check-the-class-of-the-object-hello-world." class="section level5">
+<h5>Q7. Check the class of the object “Hello World”.</h5>
+<p><br></p>
+</div>
+<div id="a7." class="section level5">
+<h5>A7.</h5>
+<pre class="r"><code>x &lt;- &quot;Hello World&quot;
+class(x)</code></pre>
+<pre><code>## [1] &quot;character&quot;</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="code-chunk-options" class="section level2">
+<h2>Code chunk options</h2>
+<div id="q8.-run-the-following-code-chunk" class="section level5">
+<h5>Q8. Run the following code chunk:</h5>
+<ul>
+<li>Observe the warnings that appear. (Observa las advertencias que
+aparecen.)</li>
+<li>Modify the chunk options to suppress warnings without changing the
+code itself. (Modifica las opciones del chunk para apagar la advertencia
+sin cambiar el código.)</li>
+</ul>
+<p><br></p>
+</div>
+<div id="a8." class="section level5">
+<h5>A8.</h5>
+<pre class="r"><code>log(-1)</code></pre>
+<pre><code>## [1] NaN</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="code-chunk-options-1" class="section level2">
+<h2>Code chunk options</h2>
+<div id="q9.-run-the-following-code-chunk---observe-the-messages-that-appear.-observa-los-mensajes-que-aparecen." class="section level5">
+<h5>Q9. Run the following code chunk: - Observe the messages that
+appear. (Observa los mensajes que aparecen.)</h5>
+<ul>
+<li>Modify the chunk options to suppress messages without changing the
+code itself. (Modifica las opciones del chunk para apagar mensajes sin
+cambiar el código.)</li>
+</ul>
+<p><br></p>
+</div>
+<div id="a9." class="section level5">
+<h5>A9.</h5>
+<pre class="r"><code># Load a package (may produce messages)
+library(dplyr)</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="creating-and-analyzing-a-vector" class="section level2">
+<h2>Creating and analyzing a vector</h2>
+<div id="q10.-create-a-numeric-vector-called-grades-containing-the-values-80-90-75-95-and-85.-then-use-the-mean-function-to-calculate-the-average-grade-and-store-the-result-in-an-object-called-average.-print-the-result.mean.-crea-un-vector-numérico-llamado-grades-que-contenga-los-valores-80-90-75-95-y-85.-luego-utiliza-la-función-mean-para-calcular-el-promedio-y-guarda-el-resultado-en-un-objeto-llamado-average.-muestra-el-resultado-en-pantalla." class="section level5">
+<h5>Q10. Create a numeric vector called grades containing the values 80,
+90, 75, 95, and 85. Then, use the mean() function to calculate the
+average grade and store the result in an object called average. Print
+the result.mean().) (Crea un vector numérico llamado grades que contenga
+los valores 80, 90, 75, 95 y 85. Luego, utiliza la función mean() para
+calcular el promedio y guarda el resultado en un objeto llamado average.
+Muestra el resultado en pantalla.)</h5>
+<p><br></p>
+</div>
+<div id="a10." class="section level5">
+<h5>A10.</h5>
+<pre class="r"><code>grades &lt;- c(80, 90, 75, 95, 85)
+average &lt;- mean(grades)
+average</code></pre>
+<pre><code>## [1] 85</code></pre>
+</div>
+</div>
+</div>
 
 
 
