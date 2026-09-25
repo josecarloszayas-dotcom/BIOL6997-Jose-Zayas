@@ -1,0 +1,521 @@
+---
+title: "Weekly Report"
+author: "Jose Zayas"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: false
+    toc_float: true
+    theme: flatly
+    fig_width: 8
+    fig_height: 6
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, warning = FALSE, message = FALSE,
+  fig.align = "center", fig.width = 11, fig.height = 7
+)
+```
+
+
+```{r libraries}
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(ggrepel)
+library(knitr)
+library(kableExtra)
+```
+
+
+```{r unzip}
+# The CSV is already in the working directory.
+# Match case-insensitively to avoid the National/national mismatch.
+csv_path <- list.files(
+  path        = ".",
+  pattern     = "national.*extract.*\\.csv$",
+  ignore.case = TRUE,
+  full.names  = TRUE
+)[1]
+
+if (is.na(csv_path) || !file.exists(csv_path)) {
+  stop("Could not find the OpenDengue national CSV in the working directory.")
+}
+
+message("Reading: ", csv_path)
+dengue_raw <- read_csv(csv_path, show_col_types = FALSE)
+```
+
+
+```{r filter-national-yearly}
+dengue_nat <- dengue_raw %>%
+  filter(is.na(adm_1_name), is.na(adm_2_name)) %>%
+  mutate(
+    span_days  = as.numeric(calendar_end_date - calendar_start_date),
+    resolution = case_when(
+      span_days >= 300 ~ "Year",
+      span_days >= 25  ~ "Month",
+      span_days >= 5   ~ "Week",
+      TRUE             ~ "Other"
+    ),
+    year = year(calendar_start_date)
+  ) %>%
+  filter(resolution == "Year") %>%
+  mutate(adm_0_name = toupper(trimws(adm_0_name)))
+```
+
+
+```{r population}
+pop <- tribble(
+  ~adm_0_name,              ~population,
+  # ---- Latin America & Caribbean ----
+  "ARGENTINA",               45200000,
+  "BARBADOS",                  287000,
+  "BELIZE",                    398000,
+  "BOLIVIA",                 11670000,
+  "BRAZIL",                 212600000,
+  "CHILE",                   19120000,
+  "COLOMBIA",                50880000,
+  "COSTA RICA",               5090000,
+  "CUBA",                    11330000,
+  "DOMINICAN REPUBLIC",      10850000,
+  "ECUADOR",                 17640000,
+  "EL SALVADOR",              6490000,
+  "GUATEMALA",               17920000,
+  "GUYANA",                    787000,
+  "HAITI",                   11400000,
+  "HONDURAS",                 9900000,
+  "JAMAICA",                  2960000,
+  "MARTINIQUE",                376000,
+  "MEXICO",                 128900000,
+  "NICARAGUA",                6620000,
+  "PANAMA",                   4310000,
+  "PARAGUAY",                 7130000,
+  "PERU",                    32970000,
+  "PUERTO RICO",              3280000,
+  "SURINAME",                  587000,
+  "TRINIDAD AND TOBAGO",      1400000,
+  "URUGUAY",                  3470000,
+  "VENEZUELA",               28490000,
+  # ---- Asia ----
+  "BANGLADESH",             164700000,
+  "CAMBODIA",                16720000,
+  "CHINA",                 1439300000,
+  "INDIA",                 1380000000,
+  "INDONESIA",              273500000,
+  "LAOS",                     7270000,
+  "MALAYSIA",                32370000,
+  "MYANMAR",                 54410000,
+  "PAKISTAN",               220900000,
+  "PHILIPPINES",            109580000,
+  "SINGAPORE",                5850000,
+  "SRI LANKA",               21410000,
+  "TAIWAN",                  23820000,
+  "THAILAND",                69800000,
+  "VIETNAM",                 97340000,
+  # ---- Middle East ----
+  "SAUDI ARABIA",            34810000,
+  "UNITED ARAB EMIRATES",     9890000,
+  "YEMEN",                   29830000,
+  # ---- Europe ----
+  "SPAIN",                   46750000,
+  "GREECE",                  10720000,
+  "UNITED KINGDOM",          67220000,
+  "HUNGARY",                  9660000,
+  "FRANCE",                  65270000,
+  "DENMARK",                  5830000,
+  "ESTONIA",                  1330000,
+  "MALTA",                     442000,
+  "FINLAND",                  5540000,
+  "ICELAND",                   341000,
+  "ITALY",                   59550000,
+  "PORTUGAL",                10310000,
+  "CROATIA",                  4050000,
+  "GERMANY",                 83780000,
+  "SWEDEN",                  10100000,
+  # ---- High-income (non-Europe) ----
+  "UNITED STATES",          331500000,
+  "AUSTRALIA",               25690000
+)
+```
+
+
+```{r sle-real}
+sle_real <- tribble(
+  ~adm_0_name,             ~SLE_rate, ~source,
+  # ---- Latin America & Caribbean ----
+  "BARBADOS",               163.31,   "Tian 2023 (ARD)",
+  "PUERTO RICO",            159.00,   "Molina 2007",
+  "BRAZIL",                 147.37,   "Tian 2023 (ARD)",
+  "COLOMBIA",                91.90,   "Fernandez-Avila 2019 (crude)",
+  "MEXICO",                  90.00,   "Pelaez-Ballestas 2011",
+  "VENEZUELA",               70.00,   "Granados 2015 (Monagas)",
+  "MARTINIQUE",              64.00,   "Deligny 2002",
+  "CUBA",                    60.00,   "Reyes-Llerena 2009 (Havana)",
+  "ECUADOR",                 60.00,   "Guevara-Pacheco 2016 (Cuenca)",
+  "ARGENTINA",               58.60,   "Scolnik 2014 (Buenos Aires)",
+  # ---- Asia ----
+  "TAIWAN",                  55.60,   "Chiu & Lai 2010",
+  "CHINA",                   37.60,   "Zou 2014 (Anhui)",
+  "SOUTH KOREA",             26.50,   "Shim 2014",
+  "INDIA",                    3.20,   "Chatterjee 2023",
+  # ---- Middle East ----
+  "UNITED ARAB EMIRATES",   166.92,   "Tian 2023 (ARD)",
+  "SAUDI ARABIA",            20.00,   "Al Arfaj 2009 (Riyadh)",
+  # ---- Europe ----
+  "SPAIN",                  210.00,   "Cortes Verdu 2020",
+  "GREECE",                 123.00,   "Gergianaki 2017 (Crete)",
+  "UNITED KINGDOM",          97.00,   "Rees 2016",
+  "HUNGARY",                 70.00,   "Kedves 2020",
+  "FRANCE",                  47.00,   "Arnaud 2014",
+  "DENMARK",                 45.20,   "Hermansen 2016",
+  "ESTONIA",                 38.00,   "Otsa 2017",
+  "MALTA",                   29.30,   "Magro 2018",
+  "FINLAND",                 28.00,   "Helve 1985",
+  "ICELAND",                 20.00,   "older source",
+  # ---- High-income (non-Europe) ----
+  "UNITED STATES",           73.00,   "Lim 2014 / Somers 2014",
+  "AUSTRALIA",               45.30,   "Bossingham 2003"
+) %>% mutate(tier = "Real")
+```
+
+
+```{r sle-proxy}
+sle_proxy <- tribble(
+  ~adm_0_name,             ~SLE_rate, ~source,
+  # Tropical Latin America proxy
+  "PARAGUAY",               110.85,   "Tian 2023 (Tropical LA proxy)",
+  "SURINAME",               110.85,   "Tian 2023 (Tropical LA proxy)",
+  "GUYANA",                 110.85,   "Tian 2023 (Tropical LA proxy)",
+  # Caribbean proxy
+  "HAITI",                   90.00,   "Tian 2023 (Caribbean proxy)",
+  "DOMINICAN REPUBLIC",      90.00,   "Tian 2023 (Caribbean proxy)",
+  "TRINIDAD AND TOBAGO",     90.00,   "Tian 2023 (Caribbean proxy)",
+  "JAMAICA",                 90.00,   "Tian 2023 (Caribbean proxy)",
+  # Central Latin America proxy
+  "GUATEMALA",               80.00,   "Tian 2023 (Central LA proxy)",
+  "HONDURAS",                80.00,   "Tian 2023 (Central LA proxy)",
+  "EL SALVADOR",             80.00,   "Tian 2023 (Central LA proxy)",
+  "NICARAGUA",               80.00,   "Tian 2023 (Central LA proxy)",
+  "COSTA RICA",              80.00,   "Tian 2023 (Central LA proxy)",
+  "PANAMA",                  80.00,   "Tian 2023 (Central LA proxy)",
+  "BELIZE",                  80.00,   "Tian 2023 (Central LA proxy)",
+  "PERU",                    80.00,   "Tian 2023 (Central LA proxy)",
+  # Andean Latin America proxy
+  "BOLIVIA",                 60.00,   "Tian 2023 (Andean LA proxy)",
+  # Southern Latin America proxy
+  "CHILE",                   30.00,   "Tian 2023 (Southern LA proxy)",
+  "URUGUAY",                 30.00,   "Tian 2023 (Southern LA proxy)",
+  # South / Southeast Asia proxies
+  "BANGLADESH",              25.00,   "Regional proxy (South Asia)",
+  "SRI LANKA",               25.00,   "Regional proxy (South Asia)",
+  "PAKISTAN",                25.00,   "Regional proxy (South Asia)",
+  "INDONESIA",               30.00,   "Regional proxy (SE Asia)",
+  "MALAYSIA",                43.00,   "Regional proxy (SE Asia)",
+  "PHILIPPINES",             22.00,   "Regional proxy (SE Asia)",
+  "THAILAND",                38.00,   "Regional proxy (SE Asia)",
+  "VIETNAM",                 35.00,   "Regional proxy (SE Asia)",
+  "CAMBODIA",                30.00,   "Regional proxy (SE Asia)",
+  "LAOS",                    30.00,   "Regional proxy (SE Asia)",
+  "MYANMAR",                 30.00,   "Regional proxy (SE Asia)",
+  "SINGAPORE",               40.00,   "Regional proxy (SE Asia)",
+  # Middle East proxy
+  "YEMEN",                   20.00,   "Regional proxy (MENA)"
+) %>% mutate(tier = "Proxy")
+
+sle_all <- bind_rows(sle_real, sle_proxy)
+```
+
+
+```{r region-lookup}
+region_lookup <- tribble(
+  ~adm_0_name,             ~gbd_region,
+  # ---- Latin America ----
+  "ARGENTINA",              "Latin America",
+  "BARBADOS",               "Latin America",
+  "BELIZE",                 "Latin America",
+  "BOLIVIA",                "Latin America",
+  "BRAZIL",                 "Latin America",
+  "CHILE",                  "Latin America",
+  "COLOMBIA",               "Latin America",
+  "COSTA RICA",             "Latin America",
+  "CUBA",                   "Latin America",
+  "DOMINICAN REPUBLIC",     "Latin America",
+  "ECUADOR",                "Latin America",
+  "EL SALVADOR",            "Latin America",
+  "GUATEMALA",              "Latin America",
+  "GUYANA",                 "Latin America",
+  "HAITI",                  "Latin America",
+  "HONDURAS",               "Latin America",
+  "JAMAICA",                "Latin America",
+  "MARTINIQUE",             "Latin America",
+  "MEXICO",                 "Latin America",
+  "NICARAGUA",              "Latin America",
+  "PANAMA",                 "Latin America",
+  "PARAGUAY",               "Latin America",
+  "PERU",                   "Latin America",
+  "PUERTO RICO",            "Latin America",
+  "SURINAME",               "Latin America",
+  "TRINIDAD AND TOBAGO",    "Latin America",
+  "URUGUAY",                "Latin America",
+  "VENEZUELA",              "Latin America",
+  # ---- South Asia ----
+  "BANGLADESH",             "South Asia",
+  "INDIA",                  "South Asia",
+  "PAKISTAN",               "South Asia",
+  "SRI LANKA",              "South Asia",
+  # ---- Southeast Asia ----
+  "CAMBODIA",               "Southeast Asia",
+  "INDONESIA",              "Southeast Asia",
+  "LAOS",                   "Southeast Asia",
+  "MALAYSIA",               "Southeast Asia",
+  "MYANMAR",                "Southeast Asia",
+  "PHILIPPINES",            "Southeast Asia",
+  "SINGAPORE",              "Southeast Asia",
+  "THAILAND",               "Southeast Asia",
+  "VIETNAM",                "Southeast Asia",
+  # ---- East Asia ----
+  "CHINA",                  "East Asia",
+  "TAIWAN",                 "East Asia",
+  "SOUTH KOREA",            "East Asia",
+  # ---- Middle East ----
+  "SAUDI ARABIA",           "Middle East",
+  "UNITED ARAB EMIRATES",   "Middle East",
+  "YEMEN",                  "Middle East",
+  # ---- Europe ----
+  "FRANCE",                 "Europe",
+  "SPAIN",                  "Europe",
+  "ITALY",                  "Europe",
+  "PORTUGAL",               "Europe",
+  "GREECE",                 "Europe",
+  "CROATIA",                "Europe",
+  "GERMANY",                "Europe",
+  "UNITED KINGDOM",         "Europe",
+  "SWEDEN",                 "Europe",
+  "DENMARK",                "Europe",
+  "HUNGARY",                "Europe",
+  "FINLAND",                "Europe",
+  "ICELAND",                "Europe",
+  "MALTA",                  "Europe",
+  "ESTONIA",                "Europe",
+  # ---- High-income (non-Europe) ----
+  "UNITED STATES",          "High-income",
+  "AUSTRALIA",              "High-income"
+)
+```
+
+```{r normalize-country-names}
+dengue_nat <- dengue_nat %>%
+  mutate(
+    adm_0_name = toupper(trimws(adm_0_name)),
+    adm_0_name = recode(adm_0_name,
+      "UNITED STATES OF AMERICA"   = "UNITED STATES",
+      "USA"                        = "UNITED STATES",
+      "US"                         = "UNITED STATES",
+      "VIET NAM"                   = "VIETNAM",
+      "RUSSIAN FEDERATION"         = "RUSSIA",
+      "KOREA, REPUBLIC OF"         = "SOUTH KOREA",
+      "KOREA, DEMOCRATIC PEOPLE'S REPUBLIC OF" = "NORTH KOREA",
+      "IRAN (ISLAMIC REPUBLIC OF)" = "IRAN",
+      "TAIWAN, PROVINCE OF CHINA"  = "TAIWAN",
+      "UNITED REPUBLIC OF TANZANIA" = "TANZANIA",
+      "BOLIVIA (PLURINATIONAL STATE OF)" = "BOLIVIA",
+      "VENEZUELA (BOLIVARIAN REPUBLIC OF)" = "VENEZUELA",
+      "CONGO, DEMOCRATIC REPUBLIC OF" = "DR CONGO",
+      "COTE D'IVOIRE"              = "CÔTE D'IVOIRE",
+      "LAO PEOPLE'S DEMOCRATIC REPUBLIC" = "LAOS"
+    )
+  )
+```
+
+
+```{r dengue-rate}
+dengue_rate <- dengue_nat %>%
+  filter(year >= 2015, year <= 2024) %>%
+  group_by(adm_0_name) %>%
+  summarise(mean_cases = mean(dengue_total, na.rm = TRUE), .groups = "drop") %>%
+  left_join(pop, by = "adm_0_name") %>%
+  mutate(dengue_rate = mean_cases / population * 100000) %>%
+  filter(!is.na(dengue_rate))
+```
+
+
+```{r combined}
+combined <- dengue_rate %>%
+  inner_join(sle_all,      by = "adm_0_name") %>%
+  inner_join(region_lookup, by = "adm_0_name") %>%
+  # Africa excluded by design (no African countries in SLE tables)
+  filter(!gbd_region %in% c("Sub-Saharan Africa", "North Africa"))
+```
+
+```{r define-plot-df}
+# Regions with enough data for per-region statistics and faceting
+cor_region  <- combined %>%
+  group_by(gbd_region) %>%
+  group_modify(~{
+    if (nrow(.x) < 4) return(tibble())
+    ct <- cor.test(.x$dengue_rate, .x$SLE_rate,
+                   method = "spearman", exact = FALSE)
+    tibble(n = nrow(.x), rho = ct$estimate, p_value = ct$p.value)
+  }) %>%
+  ungroup() %>%
+  mutate(p_adj = p.adjust(p_value, method = "BH"))
+
+# Regions that survive the n >= 4 filter
+top_regions <- cor_region %>% filter(n >= 4) %>% pull(gbd_region)
+
+# Data subset for faceted plots
+plot_df <- combined %>% filter(gbd_region %in% top_regions)
+```
+
+# SLE Prevalence vs Dengue Burden
+
+##  Scatter Log-Log
+
+```{r scatter-log, fig.width=13, fig.height=8}
+ggplot(combined, aes(x = dengue_rate, y = SLE_rate)) +
+  geom_point(aes(color = tier), size = 5, alpha = 0.85) +
+  geom_text_repel(aes(label = str_to_title(adm_0_name)),
+                  size = 3.6, max.overlaps = 30, box.padding = 0.6) +
+  scale_x_log10(labels = comma) +
+  scale_y_log10(labels = comma) +
+  scale_color_manual(values = c("Real" = "#1b9e77", "Proxy" = "#d95f02")) +
+  labs(
+    title    = "Dengue Rate vs SLE Prevalence (global, log-log)",
+    subtitle = "Log scale handles the 1-3 order-of-magnitude spread in both axes",
+    x        = "Dengue rate (cases per 100,000, 2015-2024 avg)",
+    y        = "SLE prevalence (per 100,000)",
+    color    = "SLE data"
+  ) +
+  theme_minimal(base_size = 15) +
+  theme(legend.position = "bottom")
+```
+
+## Scatter — Linear version
+
+```{r scatter-linear, fig.width=13, fig.height=8}
+ggplot(combined, aes(x = dengue_rate, y = SLE_rate)) +
+  geom_point(aes(color = tier), size = 5, alpha = 0.85) +
+  geom_text_repel(aes(label = str_to_title(adm_0_name)),
+                  size = 3.6, max.overlaps = 30, box.padding = 0.6) +
+  scale_x_continuous(labels = comma) +
+  scale_y_continuous(labels = comma) +
+  scale_color_manual(values = c("Real" = "#1b9e77", "Proxy" = "#d95f02")) +
+  labs(
+    title    = "Dengue Rate vs SLE Prevalence (global, linear)",
+    subtitle = "Linear scale; most points cluster near origin because of large range",
+    x        = "Dengue rate (cases per 100,000, 2015-2024 avg)",
+    y        = "SLE prevalence (per 100,000)",
+    color    = "SLE data"
+  ) +
+  theme_minimal(base_size = 15) +
+  theme(legend.position = "bottom")
+```
+
+
+# Faceted Scatter by Region
+
+```{r scatter-faceted-log, fig.width=12, fig.height=20}
+ggplot(plot_df, aes(x = dengue_rate, y = SLE_rate)) +
+  geom_point(aes(color = tier), size = 4, alpha = 0.85) +
+  geom_text_repel(aes(label = str_to_title(adm_0_name)),
+                  size = 3.2, max.overlaps = 20) +
+  scale_x_log10(labels = comma) +
+  scale_y_log10(labels = comma) +
+  scale_color_manual(values = c("Real" = "#1b9e77", "Proxy" = "#d95f02")) +
+  facet_wrap(~ gbd_region, scales = "free", ncol = 1) +
+  labs(title = "Dengue vs SLE by GBD region (log-log)",
+       x = "Dengue rate (per 100,000)",
+       y = "SLE prevalence (per 100,000)",
+       color = "SLE data") +
+  theme_minimal(base_size = 15) +
+  theme(
+    panel.spacing    = unit(2.5, "lines"),
+    panel.border     = element_rect(color = "grey70", fill = NA, linewidth = 0.5),
+    panel.background = element_rect(fill = "grey98", color = NA),
+    strip.text       = element_text(face = "bold", size = 14),
+    strip.background = element_rect(fill = "grey85", color = NA),
+    legend.position  = "bottom"
+  )
+```
+
+
+
+## Summary Table
+
+```{r table}
+combined %>%
+  select(adm_0_name, gbd_region, dengue_rate, SLE_rate, source, tier) %>%
+  arrange(gbd_region, desc(dengue_rate)) %>%
+  mutate(dengue_rate = round(dengue_rate, 1),
+         SLE_rate    = round(SLE_rate, 2)) %>%
+  rename(Country = adm_0_name, Region = gbd_region,
+         `Dengue /100k` = dengue_rate,
+         `SLE /100k`    = SLE_rate,
+         Source = source, Tier = tier) %>%
+  kable(caption = "Countries in analysis") %>%
+  kable_styling(full_width = FALSE,
+                bootstrap_options = c("striped", "hover")) %>%
+  scroll_box(height = "500px")
+```
+
+__________________________________________________________________________________
+
+
+
+# MicroRNAs at the Interface of Dengue Infection and Systemic Lupus Erythematosus: A Focus on miR-21-5p
+
+## 1. Introduction to MicroRNAs
+MicroRNAs (miRNAs) are a class of small non-coding RNAs, approximately 18–25 nucleotides in length, that function as key post-transcriptional regulators of gene expression. Following transcription by RNA polymerase II and sequential processing by the RNase III enzymes Drosha and Dicer, mature miRNAs are incorporated into the RNA-induced silencing complex (RISC). Within RISC, miRNAs bind to complementary sequences—predominantly within the 3′-untranslated regions (3′UTR)—of specific messenger RNAs (mRNAs), thereby preventing translational events through either mRNA degradation or translational repression. Each miRNA is capable of regulating the expression of several, perhaps even hundreds, of target genes, and they are involved in essential biological processes including embryonic development, immune response, inflammation, oncogenesis, and cellular growth and proliferation.
+
+# 2. Viral Infections and miRNAs: The Case of Dengue Virus
+The involvement of miRNAs in viral infections has been extensively documented. Mutations in the main catalytic components of the RNA interference (RNAi) pathway lead to increased replication of several viruses, including dengue virus (DENV), vesicular stomatitis virus, influenza A virus, and human immunodeficiency virus in mammalian cells
+
+Two independent studies have extensively profiled miRNA expressions in the blood of dengue patients, consistently demonstrating a significant number of differentially expressed miRNAs in response to infection. Tambyah et al.  identified 348 differentially expressed miRNAs, with 17 miRNAs capable of distinguishing mild dengue from severe dengue with complications. Notably, **miR-24-1-5p**, **miR-512-5p**, and **miR-4640-3p** distinguished mild dengue from cases with liver complications, **while miR-383** was significantly upregulated in mild dengue compared to severe dengue with fluid accumulation. Ouyang et al. (2016) found 12 downregulated and 41 upregulated miRNAs in the sera of DENV-1 patients, with **hsa-miR-21-5p**, **hsa-miR-146a-5p**, **hsa-miR-590-5p**, **hsa-miR-188-5p**, and **hsa-miR-152-3p** identified as promising non-invasive molecular markers for detecting DENV infection.
+
+miRNAs can directly target the viral genome to inhibit DENV replication. The first evidence was provided by miR-548 g-3p, which binds to the Stem Loop A promoter in the 5′UTR, a key element for DENV RNA synthesis, thereby downregulating replication of all four DENV serotypes. Similarly, miR-133a, miR-484, and miR-744 target the 3′UTR of the DENV genome, specifically the 3′ stem loop involved in genome circularization and viral viability. In the mosquito vector, miR-252 targets the DENV-2 E gene, suppressing viral replication.
+
+miRNAs also modulate host factors to inhibit or facilitate DENV replication. Let-7c protects infected cells from oxidative stress and inflammation by targeting BACH1. miR-30e* enhances the host antiviral immune response by targeting IκBα, leading to NF-κB activation and increased IFN-β expression. The miR-34 family suppresses Wnt signaling, thereby increasing type I IFN and interferon-stimulated gene expression. miR-223 inhibits DENV-2 replication by dampening stathmin 1 expression.
+
+Conversely, miRNAs can also favor viral replication. miR-146a enhances DENV-2 replication by targeting TRAF6 and dampening IFN-β production. **miR-21 promotes DENV-2 replication, although the exact mechanism remains unclear; it may directly target the NS1 protein sequence**.
+
+
+<div style="text-align: center;">
+  <img src="DEnvmir.jpg" width="450" height="420"/>
+</div>
+
+
+## 3. Autoimmunity and miRNAs:The Case of Systemic Lupus Erythematosus
+Autoimmune diseases arise from a breakdown of self-tolerance, leading to immune-mediated damage of host tissues. miRNAs have emerged as critical regulators of immune cell development, activation, and function, and their dysregulation contributes to autoimmune pathogenesis. Systemic lupus erythematosus (SLE) is a prototypical systemic autoimmune disease characterized by loss of tolerance to nuclear antigens, immune complex deposition, and multi-organ damage.
+
+<div style="text-align: center;">
+  <img src="Mir25.jpg" width="450" height="420"/>
+</div>
+
+In SLE, numerous miRNAs exhibit altered expression profiles. **miR-21** is significantly **upregulated** in the **plasma, peripheral blood mononuclear cells (PBMC), B cells, and CD4+ T cells** of SLE patients. This upregulation correlates strongly with disease activity. **Silencing of miR-21 reverses the activated phenotype of T cells from SLE patients, while overexpression of miR-21 in normal T cells induces an activated phenotype through downregulation of PDCD4**. miR-21 also promotes T cell hypomethylation by repressing RASGRP1, leading to downregulation of DNA methyltransferase 1 and overexpression of autoimmune-associated methylation-sensitive genes such as CD70 and LFA-1. Furthermore, the miR-21-TIPE2 axis plays important roles in SLE pathogenesis, as TIPE2 expression is downregulated in PBMCs from SLE patients.
+
+## 4. Points of Interest Between DENV and miR-21-5p
+The intersection of DENV infection and miR-21-5p presents several intriguing points of clinical and biological relevance:
+
+### 4.1 Diagnostic Potential: 
+Ouyang et al. (2016) identified hsa-miR-21-5p as one of five promising non-invasive molecular markers for detecting DENV infection. **miR-21-5p was significantly upregulated in the sera of DENV-1 patients** compared to healthy controls and demonstrated high sensitivity and specificity as an indicator of DENV infection. **Additionally, miR-21-5p levels correlated with the number of leukocytes and neutrophils**, suggesting its potential utility in monitoring disease progression.
+
+### 4.2 Proviral Role:
+miR-21 appears to play a proviral role in DENV infection. Kanokudom et al. (2017) found that miR-21 expression was significantly increased upon DENV-2 infection, and this upregulation promoted viral replication. **Treatment with an anti-miR-21 (AMO-21) prior to DENV infection in HepG2 cells resulted in a significant reduction in DENV-2 production**, indicating that miR-21 plays a crucial role in DENV-2 replication. 
+
+### 4.3 Inflammatory Modulation:
+miR-21 is functionally involved in inflammation and cell proliferation. During DENV infection, the cytokine storm—a systemic inflammatory response syndrome—is a hallmark of severe dengue. miR-21 promotes inflammation and plays important roles during the pathogenesis of autoimmune diseases. 
+
+## 5. miR-21-5p and Systemic Lupus Erythematosus
+miR-21-5p (often referred to simply as miR-21) plays multifaceted roles in SLE pathogenesis, affecting both innate and adaptive immune responses:
+
+### 5.1 T Cell Activation and Apoptosis:
+miR-21 is significantly increased in activated CD4+ T lymphocytes and promotes ERK and JNK signaling through downregulation of Sprouty1, thereby augmenting T cell responses. **miR-21 also inhibits T cell apoptosis** by targeting tumor suppressors including PDCD4, TIPE2, and FASL. **In SLE, miR-21 upregulation correlates with disease activity, and silencing miR-21 reverses the activated phenotype of SLE T cells.**
+
+### 5.2 DNA Hypomethylation:
+Increased miR-21 expression in CD4+ T cells from lupus patients and lupus-prone MRL/lpr mice promotes cell hypomethylation by repressing RASGRP1, leading to downregulation of DNA methyltransferase 1 and overexpression of autoimmune-associated methylation-sensitive genes such as CD70 and LFA-1. **This mechanism is particularly relevant to SLE, where defective T cell DNA methylation contributes to autoreactivity.**
+
+### 5.3 Myeloid Cell Function:
+**miR-21 negatively regulates TLR4 signaling through targeting PDCD4 in macrophages, promoting IL-10 expression and blocking NF-κB activity.** miR-21 also enhances the frequency of cytokine-induced myeloid-derived suppressor cells via targeting PTEN and promotes dendritic cell differentiation through downregulation of JAG1. 
+
+
