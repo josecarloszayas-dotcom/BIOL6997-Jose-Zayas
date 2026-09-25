@@ -24,8 +24,12 @@ output:
 
 ## R Tutorials Prompts: 
 [HomeWork 1](Assigments/Assignment_1/Assignment-1.html)
-
+<br>
+[HomeWork 2](Assigments/Assigment_2/Assignment2.html)
 
 
 ## Research:
+- Hello Professor, I am praticing on R by trying to make my weekly research reports on here. I am currently attaching them below. If its innappropiate I will quickly delete it. 
+<br>
+
 [Weekly Report 3](Invest/Test.html)
