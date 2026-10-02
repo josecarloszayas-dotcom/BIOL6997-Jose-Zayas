@@ -1,0 +1,187 @@
+---
+title: 'Weekly Report #4'
+author: "Jose Zayas"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(ggplot2)
+```
+
+
+```{r data}
+dengue_sle <- data.frame(
+  Country = c(
+    "Brazil", "Colombia", "Mexico", "Argentina", "Peru",
+    "Puerto Rico", "Cuba", "Dominican Republic", "Costa Rica",
+    "Panama", "Honduras", "Nicaragua", "Uruguay", "India", "Indonesia", "Egypt"
+  ),
+  Dengue = c(
+    159, 211, 38.21, 1, 172,
+    81.2, 16, 8.57, 89,
+    174, 94, 93, 0.21, 16, 14, 1
+  ),
+  SLE = c(
+    98, 91.9, 45, 58.6, 40.2,
+    159, 150, 100, 70.9,
+    80, 68, 71.4, 54.1, 3.2, 30, 6.1
+  )
+)
+
+knitr::kable(
+  dengue_sle,
+  digits = 2,
+  caption = "Dengue and SLE cases per 100,000 (mixed years, conservative inferences)"
+)
+```
+
+## Scatter Plot
+
+Both axes use a logarithmic scale so that countries with very low and very high values remain visible.
+
+```{r plot, fig.width=10, fig.height=6}
+ggplot(dengue_sle, aes(x = Dengue, y = SLE)) +
+  geom_point(size = 3, color = "steelblue", alpha = 0.8) +
+  geom_text(
+    aes(label = Country),
+    size = 3,
+    vjust = -0.7,
+    check_overlap = TRUE
+  ) +
+ scale_x_log10() +
+  scale_y_log10() +
+  labs(
+    x = "Dengue cases per 100,000 (log scale)",
+    y = "SLE cases per 100,000 (log scale)",
+    title = "Dengue vs SLE per 100,000",
+    subtitle = "Mixed years and metrics — conservative inferences",
+    caption = "Data compiled from various sources; interpret with caution."
+  ) +
+  theme_minimal()
+```
+
+## Spearman Correlation
+
+
+```{r correlation}
+# Calculate Spearman's rho and p-value
+spearman_test <- cor.test(dengue_sle$Dengue, dengue_sle$SLE, method = "spearman")
+
+# Format the results into a clean table
+cor_results <- data.frame(
+  Metric = c("Spearman's Rho ($\rho$)", "P-value"),
+  Value = c(round(spearman_test$estimate, 3), format.pval(spearman_test$p.value, digits = 3))
+)
+
+knitr::kable(
+  cor_results, 
+  caption = "Spearman Rank Correlation Results",
+  col.names = c("Statistical Metric", "Value")
+)
+```
+
+### Interpretation
+- **Spearman's Rho (\(\rho\)):** A value close to `1` indicates a strong positive relationship, `-1` indicates a strong negative relationship, and `0` indicates no relationship. 
+- **P-value:** If the p-value is less than `0.05`, the correlation is statistically significant. Given the sparse nature of this mixed dataset, a high p-value suggests we cannot rule out that any apparent pattern is due to random chance.
+
+
+### Notes
+
+- The x-axis and y-axis are both on log scales.
+<br>
+<br>
+
+<p align="center" style="font-size: 45px;">Blind</p>
+
+
+# 1. Summary
+
+Last week I ran the **OBAMA** (Optimization-Based Analysis of Multiple Arrays) tool
+on the duck microbiome dataset provided by Dr. Lourdes Peña Castillo. Instead of
+using the original `disease.state` grouping (control vs. disease), I regrouped the
+samples using the `rfi_group` column from the metadata file, which classifies birds
+by **Residual Feed Intake (RFI)** — `A_high` (less feed-efficient) vs. `B_low`
+(more feed-efficient). This produces a biologically meaningful comparison for a
+feed-efficiency study rather than a disease-status one.
+
+# 2. Files Received
+
+Three files were provided for this analysis:
+
+| File | Contents |
+| :--- | :--- |
+| `duck_otu_relative_abundance_20.tsv` | Relative abundance table of bacterial genera per sample. Columns: `geo_accession`, `disease.state`, and ~300 `g__*` taxa columns. |
+| `duck_otu_presence_absence_20.tsv` | Binary (0/1) presence–absence matrix for the same taxa across the same samples. |
+| `duck_metadata_20.tsv` | Sample metadata. Columns: `run_accession`, `sample_alias`, `duck_id`, `segment`, `rfi_group`. |
+
+# 3. Metadata Grouping
+
+The metadata file contains a `rfi_group` column with two levels:
+
+- **`A_high`** — high RFI (less feed-efficient birds)
+- **`B_low`** — low RFI (more feed-efficient birds)
+
+All 20 samples are jejunum segment samples. This grouping was used in place of
+`disease.state` for the OBAMA run.
+
+# 4. OBAMA MCO Results
+
+The Multi-Criteria Optimization (MCO) module returned **44 taxa distributed across
+10 Pareto frontiers**, where frontier 1 represents the most optimal trade-off
+between the two performance metrics (Median and Mean relative abundance).
+
+```{r frontier-table}
+library(readr)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+study1 <- read_csv("Study1 (2).csv", show_col_types = FALSE)
+
+study1 %>%
+  arrange(Frontier, Gene) %>%
+  kable(
+    col.names = c("Taxon (Gene)", "Frontier"),
+    caption = "Taxa identified on each Pareto frontier (Study1 MCO output)."
+  ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE)
+```
+
+<div style="text-align: center;">
+  <img src="MCO DUCKS.png" width="600" height="320"/>
+</div>
+
+### 4.1 Frontier 1 Taxa
+
+The six taxa on the most optimal frontier are:
+
+```{r frontier1, results='asis'}
+study1 %>%
+  filter(Frontier == 1) %>%
+  pull(Gene) %>%
+  paste0("- ", .) %>%
+  paste(collapse = "\n") %>%
+  cat()
+```
+
+# 5. Biological Interpretation
+
+- **Butyrate producers** — *Blautia_A_141781* (frontier 5),
+  *Mediterraneibacter_A_155507* (frontier 7), *Faecalibacillus* (frontier 8).
+  These Firmicutes are consistently enriched in low-RFI (efficient) birds in
+  the literature.
+- **Romboutsia is a known RFI-associated genus**. A 2024 study on ducks during    high production period found that RFI "particularly affecting metabolism and    disease-related microorganisms such as *Romboutsia, Enterococcus, and           Megamonas funiformis*" . The fact that Romboutsia_B appears on  Frontier 1 is   a strong validation signal.
+- **Lactic acid bacteria** — *Ligilactobacillus* (frontier 4),
+  *Bifidobacterium_388775* (frontier 8). Associated with gut health and
+  improved energy harvest.
+- **Environmental /  noise taxa** — *Bradyrhizobium_503403*,
+  *Pelomonas*, *Brevundimonas*, *Acinetobacter*. These appear on the frontier
+  but are probably transient gut passengers rather than true residents; their
+  appearance is strange and warrants investigation.
+
+The presence of butyrate producers on lower frontiers is the strongest signal
+supporting a real feed-efficiency effect in the microbiome.
+
+# Limitation: Missing Sex Data
