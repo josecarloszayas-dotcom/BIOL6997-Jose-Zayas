@@ -1,0 +1,82 @@
+---
+title: "R Tutorial 3"
+author: "Jose Zayas"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+```{r libraries}
+library(ggplot2)
+```
+
+# Assignment 3: GGPLOT
+
+### Q1. Create a histogram showing the distribution of Girth.
+
+```{r}
+data("trees")
+
+hist(trees$Girth,
+main = "Distribution of Girth",
+xlab = "Girth",
+col = "lightblue",
+border = "white",
+)
+```
+
+<br>
+
+### Q2. Create a histogram showing the distribution of Volume.
+
+```{r}
+data("trees")
+
+hist(trees$Volume,
+main = "Distribution of Volume",
+xlab = "Girth",
+col = "red",
+border = "white",
+)
+```
+
+<br>
+
+### Q3. Create a scatterplot showing the relationship between Girth and Volume.
+
+```{r}
+data(trees)
+# Create a line chart
+plot <- plot(
+  trees$Girth ~ trees$Volume,
+  type = "p",                      # line plot
+  col = "gold",                    # line color
+  lwd = 2,                         # line width
+  xlab = "Girth",  # x-axis label
+  ylab = "Volume", # y-axis label
+  main = "Relationship between Girth and Volume"
+)
+```
+
+<br>
+
+### Q4. Use the Shapiro–Wilk test to assess whether Volume is normally distributed. Report the p-value and state whether the data are normally distributed.
+
+```{r}
+shapiro.test(trees$Volume)
+```
+
+#### - The data are NOT normally distributed. There is statistically significant evidence that Volume deviates from a normal distribution.
+
+<br>
+
+### Q5. Repeat the Shapiro–Wilk test for Girth. Report the p-value and state whether Girth is normally distributed.
+
+```{r}
+shapiro.test(trees$Girth)
+```
+#### The data are normally distributed. The Shapiro–Wilk test does not detect a significant departure from normality for Girth
+

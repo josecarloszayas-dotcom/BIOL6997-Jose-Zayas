@@ -26,6 +26,8 @@ output:
 [HomeWork 1](Assigments/Assignment_1/Assignment-1.html)
 <br>
 [HomeWork 2](Assigments/Assigment_2/Assignment2.html)
+<br>
+[HomeWork 3](Assigments/Assignment_3/RT3.html)
 
 
 ## Research:
