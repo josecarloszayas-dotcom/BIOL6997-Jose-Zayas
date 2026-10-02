@@ -8,6 +8,10 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(ggplot2)
+library(dplyr)
+library(readr)
+library(knitr)
+library(kableExtra)
 ```
 
 
@@ -16,17 +20,23 @@ dengue_sle <- data.frame(
   Country = c(
     "Brazil", "Colombia", "Mexico", "Argentina", "Peru",
     "Puerto Rico", "Cuba", "Dominican Republic", "Costa Rica",
-    "Panama", "Honduras", "Nicaragua", "Uruguay", "India", "Indonesia", "Egypt"
+    "Panama", "Honduras", "Nicaragua", "Uruguay", "India", "Indonesia", "Egypt",
+    "Thailand", "France", "Spain", "UK", "USA", "China", "Paraguay", 
+    "Venezuela", "Ecuador", "Bolivia", "Guatemala", "El Sakvador"
   ),
   Dengue = c(
-    159, 211, 38.21, 1, 172,
-    81.2, 16, 8.57, 89,
-    174, 94, 93, 0.21, 16, 14, 1
+    1805, 234, 110, 38.7, 113,
+    102.6, 280, 17.36, 116,
+    433, 157, 81, 0.21, 20.6, 70, 1,
+    18.38, 0.5, 0.2, 1, 1.12, 0.61, 451, 
+    145, 206, 302.21, 258, 91
   ),
   SLE = c(
-    98, 91.9, 45, 58.6, 40.2,
+    98, 70, 45, 58.6, 40.2,
     159, 150, 100, 70.9,
-    80, 68, 71.4, 54.1, 3.2, 30, 6.1
+    80, 68, 71.4, 54.1, 3.2, 37, 6.1,
+    85.8, 81.6, 210, 107.14, 72, 37.56, 60, 
+    70, 80, 61, 59, 57
   )
 )
 
@@ -78,6 +88,81 @@ cor_results <- data.frame(
 knitr::kable(
   cor_results, 
   caption = "Spearman Rank Correlation Results",
+  col.names = c("Statistical Metric", "Value")
+)
+```
+
+## Latin America & Caribbean Subset
+
+The analysis below restricts the dataset to Latin American and Caribbean
+countries only. This is the region where dengue is endemic and where the
+comparison is epidemiologically meaningful. Non-endemic countries (France,
+Spain, UK, USA, China, Egypt, India, Indonesia, Thailand) are excluded because
+their reported cases are dominated by travel-associated infections, not local
+transmission.
+
+```{r latam-subset}
+latam_countries <- c(
+  "Brazil", "Colombia", "Mexico", "Argentina", "Peru",
+  "Puerto Rico", "Cuba", "Dominican Republic", "Costa Rica",
+  "Panama", "Honduras", "Nicaragua", "Uruguay",
+  "Paraguay", "Venezuela", "Ecuador", "Bolivia",
+  "Guatemala", "El Salvador"
+)
+
+dengue_sle_latam <- dengue_sle |>
+  filter(Country %in% latam_countries)
+
+knitr::kable(
+  dengue_sle_latam,
+  digits = 2,
+  caption = "Latin America & Caribbean subset: Dengue and SLE cases per 100,000"
+)
+```
+
+### Scatter Plot — Latin America & Caribbean Only
+
+```{r latam-plot, fig.width=10, fig.height=6}
+ggplot(dengue_sle_latam, aes(x = Dengue, y = SLE)) +
+  geom_point(size = 3, color = "firebrick", alpha = 0.8) +
+  geom_text(
+    aes(label = Country),
+    size = 3,
+    vjust = -0.7,
+    check_overlap = TRUE
+  ) +
+  scale_x_log10() +
+  labs(
+    x = "Dengue cases per 100,000 (log scale)",
+    y = "SLE cases per 100,000 (linear scale)",
+    title = "Dengue vs SLE per 100,000 — Latin America & Caribbean",
+    subtitle = "Endemic-region subset",
+    caption = "Data compiled from various sources; interpret with caution."
+  ) +
+  theme_minimal()
+```
+
+### Spearman Correlation — Latin America & Caribbean Only
+
+```{r latam-correlation}
+spearman_latam <- cor.test(
+  dengue_sle_latam$Dengue,
+  dengue_sle_latam$SLE,
+  method = "spearman"
+)
+
+latam_cor_results <- data.frame(
+  Metric = c("Spearman's Rho ($\\rho$)", "P-value", "N countries"),
+  Value  = c(
+    round(spearman_latam$estimate, 3),
+    format.pval(spearman_latam$p.value, digits = 3),
+    nrow(dengue_sle_latam)
+  )
+)
+
+knitr::kable(
+  latam_cor_results,
+  caption = "Spearman Rank Correlation — Latin America & Caribbean subset",
   col.names = c("Statistical Metric", "Value")
 )
 ```
