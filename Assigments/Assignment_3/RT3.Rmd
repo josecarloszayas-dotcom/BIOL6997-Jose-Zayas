@@ -78,5 +78,5 @@ shapiro.test(trees$Volume)
 ```{r}
 shapiro.test(trees$Girth)
 ```
-#### The data are normally distributed. The Shapiro–Wilk test does not detect a significant departure from normality for Girth
+#### - The data are normally distributed. The Shapiro–Wilk test does not detect a significant departure from normality for Girth
 
