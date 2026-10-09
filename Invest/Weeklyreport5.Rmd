@@ -1,0 +1,114 @@
+---
+title: "Weekly Report 5"
+author: "Jose Zayas"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: false
+    toc_float: true
+    theme: flatly
+    highlight: tango
+---
+
+# Complement System and Its Potential Role in Dengue-Associated Autoimmunity
+
+---
+
+## 1. Objectives
+
+This week I focused on filling/connecting in the mechanistic and molecular gaps there are in my current understanding of the relationship between SLE and Dengue. Specifically, I wanted to:
+
+- Understand the dual role of complement in SLE (protective vs. pathogenic).
+- Explore in depth the roles of NETs in both Dengue and SLE pathology.
+- Investigate long term post disease symptoms of dengue.
+
+---
+
+## 2. *Complement in SLE*
+
+### 2.1 The Complement Conundrum
+
+Pickering and Botto highlight a well-known paradox in SLE:
+
+- **Complement activation** by immune complexes (ICs) is a major driver of tissue injury.
+- **However**, hereditary deficiencies in early classical pathway components (especially **C1q**) strongly predispose to SLE.
+
+This suggests that complement, particularly C1q, has **protective functions** that go beyond its canonical role in inflammation.
+
+### 2.2 Non-Canonical(Complement-Independent) Functions of C1q
+
+The review emphasizes that C1q has multiple **non-canonical** roles that do not involve complement activation:
+
+| Function | Mechanism | Relevance to SLE |
+|----------|-----------|------------------|
+| **Enhances phagocytosis** | Binds to apoptotic cells and ICs, promoting clearance | Deficiency leads to autoantigen accumulation |
+| **Regulates cytokine release** | Reduces pro-inflammatory cytokines (e.g., IFN-α) | Loss of regulation → chronic interferon signature |
+| **Modulates adaptive immunity** | Restrains CD8+ T cell effector responses | Prevents propagation of autoimmunity |
+| **Regulates DC maturation** | Skews toward anti-inflammatory state | Limits autoantigen presentation |
+
+---
+
+## 3. Connecting to Dengue: The FcR Link
+
+### 3.1 Garcia et al. (2010): Long-Term Dengue Symptoms and FcγRIIa
+
+Garcia and colleagues conducted a follow-up study of 97 adults infected during the 2006 Cuban dengue epidemic. Their goal was to determine whether clinical symptoms persist long after the acute infection resolves, and whether these symptoms are associated with immunological or genetic factors. The study population included patients diagnosed with dengue fever (DF, n=68), dengue hemorrhagic fever (DHF, n=29), and a comparison group with asymptomatic infection (AI, n=42). Participants were evaluated approximately 2 years after their acute illness through clinical interviews, blood sampling, and psychological assessment.
+
+**Key findings:**
+
+- **Persistent symptoms were common:** Over half (55/97, 56.7%) of symptomatic dengue patients reported ongoing clinical manifestations 2 years post-infection.
+
+- **Female predominance:** Persistent symptoms were significantly more common among women (65.7% vs. 36.7% in men, p=0.008), a pattern that mirrors the female bias seen in many autoimmune conditions, including SLE.
+
+- **FcγRIIa HH genotype association:** The study genotyped participants for the FcγRIIa R/H131 polymorphism. The HH genotype (histidine/histidine at position 131) was significantly associated with the presence of persistent symptoms (p=0.027, odds ratio 2.83, 95% CI 1.01-8.11). Specifically, the HH genotype was linked to joint, muscle, or bone pain (p=0.036) and neurological complaints (p=0.008).
+
+- **Immunological alterations:** In a subset of 26 symptomatic individuals, autoimmune markers were assessed. Twenty individuals (76.9%) showed alterations in at least one marker, including:
+  - Elevated immune complexes (IC) in 42.3%
+  - Elevated C-reactive protein (CRP) in 42.3%
+  - Positive antinuclear antibodies (ANA) in 23.1%
+  - Borderline or increased complement factors (C3/C4) in 7.7% and 11.5%, respectively
+
+**Interpretation:**
+
+The authors propose that the FcγRIIa HH genotype leads to reduced binding affinity for IgG1 and IgG3 subclasses, which impairs the clearance of circulating immune complexes. This results in accumulation of ICs, chronic activation of immune cells, and release of pro-inflammatory cytokines — ultimately manifesting as persistent clinical symptoms. The presence of autoimmune markers (ANA, elevated ICs, CRP) in symptomatic individuals supports the hypothesis that dengue infection can trigger an autoimmune-like syndrome in genetically susceptible hosts.
+
+This study provides the first evidence that dengue infection can lead to long-term clinical sequelae associated with FcR dysfunction and autoimmune marker alterations, reinforcing the mechanistic link between dengue and autoimmunity.
+
+### 3.2 Complement-FcR Crosstalk
+
+The Pickering & Botto review and the Garcia et al. study converge on a common theme:
+
+Defective clearance of immune complexes — whether due to complement deficiency (C1q) or FcR dysfunction (FcγRIIa HH) — leads to autoantigen exposure and chronic inflammation.
+
+This is the mechanistic bridge between dengue and autoimmunity:
+
+1. Dengue infection → production of cross-reactive IgG1/IgG3 antibodies.
+2. FcγRIIa HH genotype → impaired IC clearance.
+3. Complement system → overwhelmed or dysregulated.
+4. Result → persistent ICs → chronic IFN signature → autoimmune-like symptoms.
+
+---
+
+## 4. Population-Level Variation: SLE and FcR Across Lineages
+
+An important consideration is that SLE prevalence is not uniform across populations. African American, Hispanic, and Asian populations have significantly higher rates of SLE compared to European populations. For example, the prevalence in women is estimated at 406 per 100,000 for African Americans compared to 164 per 100,000 for whites. African Americans also tend to experience more severe disease manifestations, including higher rates of lupus nephritis, and are less responsive to certain treatments like cyclophosphamide compared to Caucasians.
+
+Similarly, FcR biology varies across lineages, which may partially explain these disparities. A meta-analysis by Lee et al. (2009) examined the association between FcγRIIB T/I232 and FcγRIIIB NA1/NA2 polymorphisms and susceptibility to SLE and lupus nephritis:
+
+- The FcγRIIB T allele was significantly associated with increased risk of SLE (OR = 1.207, 95% CI = 1.061–1.373, P = 0.004).
+- In Asian populations, this association was even stronger (OR = 1.332, 95% CI 1.138–1.558, P < 0.001).
+- However, no such association was found in European populations.
+
+
+Furthermore, genetic studies have identified ancestry-specific SLE risk loci. A large analysis found that of 315 independent SLE-associated loci, 174 (80.56%) were found only in Asian populations, 60 (56.60%) only in European populations, 3 (27.27%) only in African Americans, and 3 (16.67%) only in Mixed Americans/Hispanics. This suggests that different populations may develop SLE through partially distinct genetic pathways — and FcR genes are likely among these ancestry-specific contributors.
+
+**Implications for our hypothesis:**
+
+If FcR dysfunction is a key mechanistic link between dengue and autoimmunity, then populations with higher frequencies of risk-associated FcR variants may be more susceptible to dengue-triggered autoimmunity. This could help explain:
+
+- Why SLE prevalence is higher in regions where dengue is endemic (e.g., Puerto Rico, Latin America, Southeast Asia).
+- Why certain populations experience more severe outcomes.
+- Why the same dengue infection might trigger autoimmunity in one individual but not another, based on their FcR genotype.
+
+The fact that Hispanic populations have FcγRIIIB allele frequencies resembling Asian populations (which also have high SLE prevalence) while African Americans have frequencies resembling Europeans (despite higher SLE prevalence) suggests that multiple FcR variants — not just one — contribute to risk. The FcR locus is complex, with copy number variation and multiple genes (FCGR2A, FCGR2B, FCGR3A, FCGR3B) that may interact.
+
