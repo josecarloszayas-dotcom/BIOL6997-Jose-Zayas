@@ -31,7 +31,7 @@ output:
 
 
 ## Exams Submission:
-[Exam 1](Exams/Exam_1/Exam1JoseZayas.html)
+[Examen 1](Exams/Exam_1/Exam1JoseZayas.html)
 
 
 ## Research:
