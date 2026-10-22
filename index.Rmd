@@ -32,7 +32,7 @@ output:
 
 ## Exams Submission:
 <br>
-[Examen 1](BIOL6997-Jose-Zayas/Exams/Exam_1/Exam1JoseZayas.html)
+[Examen 1](Exams/Exam_1/index.html)
 
 ## Research:
 - Hello Professor, I am praticing on R by trying to make my weekly research reports on here. I am currently attaching them below. If its innappropiate I will quickly delete it. 
