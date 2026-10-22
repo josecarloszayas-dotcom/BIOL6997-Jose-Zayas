@@ -49,14 +49,13 @@ border = "white",
 
 ```{r}
 data(trees)
-# Create a line chart
 plot <- plot(
   trees$Girth ~ trees$Volume,
-  type = "p",                      # line plot
-  col = "gold",                    # line color
-  lwd = 2,                         # line width
-  xlab = "Girth",  # x-axis label
-  ylab = "Volume", # y-axis label
+  type = "p",                     
+  col = "gold",          
+  lwd = 2,                      
+  xlab = "Girth", 
+  ylab = "Volume", 
   main = "Relationship between Girth and Volume"
 )
 ```
@@ -69,7 +68,7 @@ plot <- plot(
 shapiro.test(trees$Volume)
 ```
 
-#### - The data are NOT normally distributed. There is statistically significant evidence that Volume deviates from a normal distribution.
+#### - The data are not normally distributed. There is statistically significant evidence that Volume deviates from a normal distribution.
 
 <br>
 
