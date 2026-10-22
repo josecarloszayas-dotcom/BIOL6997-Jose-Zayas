@@ -1,0 +1,108 @@
+---
+title: "R Class Exam 1 José C. Zayas"
+author: "Jose Zayas"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: tactile
+    highlight: github
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(aod)
+```
+<br>
+
+## BIOL6997 Prof. Pablo Gutierrez Examen 1
+
+<br>
+
+### Mammals sleep dataset (msleep)
+
+
+### Context / Contexto: You are experts in Mammalogy, and your field technicians have collected data on sleep behavior in different mammal species. Now you must begin exploring how these patterns relate to activity and daily rhythms.
+
+<br> 
+
+#### 1. Use filter() to subset msleep to only animals who are awake for at least 12 hours of the day. 
+- Hint: “At least” like saying “greater than or equal to,” i.e. 
+
+```{r, warnings = FALSE}
+msleep |>
+  filter(sleep_total >= 12)
+```
+<br>
+
+#### 2. Use mutate() to create a new column called percent_day_awake that gives the percentage of the day that each species spends awake. 
+#### Use select() with everything() at the end to verify your calculation. Usa select() con everything() al final para comprobar que tus cálculos son correctos.
+- Hint: A day has 24 hours. The column awake indicates the average hours a species is awake per day. Calculate the percentage with (col / 24) * 100.
+
+```{r}
+msleep |> 
+  mutate(percent_day_awake = (awake/24)*100) |>
+  select(percent_day_awake, everything())
+```
+
+<br>
+
+### Storm tracks data (storms)
+
+
+### Context / Contexto: You are part of a climatology research group analyzing storm trajectories in the Atlantic. Your team has assembled a long-term dataset, and your task is to start identifying temporal trends and patterns in storm intensity.
+<br>
+
+
+#### 3. Use group_by() and summarise() to calculate the number of storms per year.
+- Hint group_by(col) groups the rows by time, and summarise(num_storms = n()) counts how many rows (storms) there are per year.
+
+```{r}
+storms |>
+  group_by(year) |>
+  summarise(num_storms = n())
+```
+
+<br>
+
+#### 4. Use filter() to subset storms to only storms with wind speeds greater than 50 knots, then use arrange() to sort by wind descending.
+- Hint Use filter(col > 50) to select strong storms, and arrange(desc(col)) to sort the results from highest to lowest.
+
+
+```{r}
+storms |>
+  filter(wind > 50) |>
+  arrange(desc(wind))
+```
+
+
+<br>
+
+### A Comparison of Site Preferences of Two Species of Lizard (lizards)
+
+
+### Context / Contexto: You are field ecologists studying habitat use by two Anolis species. Your team has spent weeks observing their behavior at different times of day and in varying microhabitats. Now it’s time to analyze the data to test your hypotheses.
+ <br>
+
+#### 5. Determine which Site and Diameter combination has the highest total grahami.
+- Hint: group_by(col1, col2) %>% summarise(new_var = sum(var)) %>% arrange(desc(new_var))
+
+```{r, messages = FALSE, WARNINGS = FALSE}
+lizards |>
+  group_by(Site, Diameter) %>% summarise(HighestGrahami= sum(grahami)) %>% arrange(desc(HighestGrahami))
+```
+
+<br>
+
+#### 6. Create a boxplot showing the distribution of opalinus counts under different light conditions (Sun vs. Shade) using ggplot2.
+- Hint: Use ggplot(), aes(), and geom_boxplot().
+Sugerencia: Usa ggplot(), aes() y geom_boxplot()
+
+```{R}
+lizards |>
+  ggplot(aes(x = Site, y = opalinus, fill = Site)) +
+  geom_boxplot() +
+  labs(title = "Distribution of opalinus counts under different light conditions",
+       x = "Light condition",
+       y = "Opalinus count")
+```
