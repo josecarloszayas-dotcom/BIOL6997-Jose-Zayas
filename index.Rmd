@@ -32,8 +32,6 @@ output:
 
 ## Exams Submission:
 <br>
-[Examen 1](Exams/Exam_1/Exam1JoseZayas.html)
-<br>
 [Examen 1](Exams/Exam_1/Exam1JoseZayas.Rmd)
 
 ## Research:
