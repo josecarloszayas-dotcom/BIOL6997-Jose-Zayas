@@ -44,3 +44,6 @@ output:
 [Weekly Report 4](Invest/Weeklyreport4.html)
 <br>
 [Weekly Report 4](Invest/Weeklyreport5.html) 
+<br>
+[Weekly Report 6](Invest/Weeklyreport6.hmtl)
+

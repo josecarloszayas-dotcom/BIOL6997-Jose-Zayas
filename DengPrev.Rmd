@@ -1,0 +1,66 @@
+---
+title: "DenguePrev"
+author: "Jose Zayas"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+# Load libraries
+library(dplyr)
+library(readr)
+
+# Read the CSV (adjust path if needed)
+df <- read_csv("IHME-GBD_2023_DATA-d3522651-1.csv")
+
+# Filter to the rows we care about
+dengue <- df %>%
+  filter(metric_name == "Percent",
+         age_name == "All ages",
+         cause_name == "Dengue")
+
+# ---- Helper: one row per country/year, split by sex ----
+extract_sex <- function(sex_label) {
+  dengue %>%
+    filter(sex_name == sex_label) %>%
+    group_by(location_name, year) %>%
+    summarise(val = last(val), .groups = "drop") %>%   # dedupe (last wins)
+    arrange(location_name, year)
+}
+
+adults <- extract_sex("Both")
+women  <- extract_sex("Female")
+men    <- extract_sex("Male")
+
+# ---- Optional: one row per country, keeping the LATEST year ----
+latest_per_country <- function(d) {
+  d %>%
+    group_by(location_name) %>%
+    slice_max(year, n = 1, with_ties = FALSE) %>%
+    ungroup() %>%
+    arrange(location_name) %>%
+    select(location_name, year, val)
+}
+
+adults_latest <- latest_per_country(adults)
+women_latest  <- latest_per_country(women)
+men_latest    <- latest_per_country(men)
+
+# Dengue val is a proportion (Percent metric). Convert to per 100,000:
+dengue_sle <- dengue_sle |>
+  mutate(dengue_per100k = val * 100000)
+
+# View results
+print(adults_latest)
+print(women_latest)
+print(men_latest)
+
+# ---- If you want paste-ready R lists (tuples as character vectors) ----
+to_list <- function(d) {
+  paste0('("', d$location_name, '", ', d$year, ', ', d$val, ')', collapse = ",\n")
+}
+
+cat("adults = list(\n", to_list(adults_latest), "\n)\n")
+cat("women  = list(\n", to_list(women_latest),  "\n)\n")
+cat("men    = list(\n", to_list(men_latest),    "\n)\n")
+```

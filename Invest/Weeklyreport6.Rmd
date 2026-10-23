@@ -1,0 +1,296 @@
+---
+title: 'Weekly Report #4'
+author: "Jose Zayas"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+# Epidemiological Stusy - Dengue SLE spearman correlation 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(knitr)
+library(kableExtra)
+```
+
+```{r}
+# ---- Dengue: GBD 2023, all ages, Percent metric, 2023 (proportion x100000) ----
+# Adults (Both)
+dengue_adults <- c(
+  "Brazil" = 0.0049154848356153, "Colombia" = 0.0005211515781623,
+  "Mexico" = 0.0008714686403405, "Argentina" = 0.0008372081272924,
+  "Peru" = 0.0025023351198893, "Puerto Rico" = 7.57393724582e-05,
+  "Cuba" = 1.6712597066e-05, "Dominican Republic" = 5.92221070148e-05,
+  "Costa Rica" = 0.0021505196334826, "Panama" = 0.0013897697959457,
+  "Honduras" = 0.0009670682675277, "Nicaragua" = 0.0304196861193154,
+  "Uruguay" = 0, "India" = 0.0001135471702261,
+  "Indonesia" = 9.90717959843e-05, "Egypt" = 5.999234653e-07,
+  "Thailand" = 0.0010147591132013, "France" = 0, "Spain" = 0,
+  "United Kingdom" = 0, "United States of America" = 6.24280686e-08,
+  "China" = 1.205126599e-07, "Paraguay" = 0.0026467535572857,
+  "Venezuela (Bolivarian Republic of)" = 0.0002049924129464,
+  "Ecuador" = 0.0005204248122684,
+  "Bolivia (Plurinational State of)" = 0.0042643565430783,
+  "Guatemala" = 0.0025401327068257, "El Salvador" = 0.0001203006828955
+)
+
+# Women (Female)
+dengue_women <- c(
+  "Brazil" = 0.0052237223665378, "Colombia" = 0.0005507760068347,
+  "Mexico" = 0.0009212801027426, "Argentina" = 0.0008868255176627,
+  "Peru" = 0.0026733362042812, "Puerto Rico" = 8.08188340874e-05,
+  "Cuba" = 1.78080118832e-05, "Dominican Republic" = 6.3375995805e-05,
+  "Costa Rica" = 0.0022742300641545, "Panama" = 0.0014731769622607,
+  "Honduras" = 0.0010280533697877, "Nicaragua" = 0.0322399127398417,
+  "Uruguay" = 0, "India" = 0.000119544329875,
+  "Indonesia" = 0.0001048795961706, "Egypt" = 6.154630301e-07,
+  "Thailand" = 0.0010799102828675, "France" = 0, "Spain" = 0,
+  "United Kingdom" = 0, "United States of America" = 6.36415782e-08,
+  "China" = 1.207577293e-07, "Paraguay" = 0.0028146402147048,
+  "Venezuela (Bolivarian Republic of)" = 0.0002181862505376,
+  "Ecuador" = 0.0005527488576549,
+  "Bolivia (Plurinational State of)" = 0.0045474323381447,
+  "Guatemala" = 0.0026921453188825, "El Salvador" = 0.0001272331835328
+)
+
+# Men (Male)
+dengue_men <- c(
+  "Brazil" = 0.0045840087890916, "Colombia" = 0.0004894395351538,
+  "Mexico" = 0.0008176689985129, "Argentina" = 0.0007830976992697,
+  "Peru" = 0.0023311100371917, "Puerto Rico" = 7.01179003054e-05,
+  "Cuba" = 1.55932966045e-05, "Dominican Republic" = 5.49518088348e-05,
+  "Costa Rica" = 0.0020241804172173, "Panama" = 0.0013029780386191,
+  "Honduras" = 0.0009015137790515, "Nicaragua" = 0.0285063492125947,
+  "Uruguay" = 0, "India" = 0.0001077030627083,
+  "Indonesia" = 9.33275541808e-05, "Egypt" = 5.850163981e-07,
+  "Thailand" = 0.0009431205654436, "France" = 0, "Spain" = 0,
+  "United Kingdom" = 0, "United States of America" = 6.11638863e-08,
+  "China" = 1.202751669e-07, "Paraguay" = 0.0024734349032225,
+  "Venezuela (Bolivarian Republic of)" = 0.0001905769731934,
+  "Ecuador" = 0.0004857627849676,
+  "Bolivia (Plurinational State of)" = 0.0039727601989525,
+  "Guatemala" = 0.0023746408639546, "El Salvador" = 0.0001120919810022
+)
+
+# ---- SLE: Tian et al. (2022), per 100,000 ----
+sle_adults <- c(
+  "Brazil" = 8.00, "Colombia" = 6.50, "Mexico" = 6.50, "Argentina" = 1.80,
+  "Peru" = 6.50, "Puerto Rico" = 7.88, "Cuba" = 7.88,
+  "Dominican Republic" = 7.88, "Costa Rica" = 6.50, "Panama" = 6.50,
+  "Honduras" = 6.50, "Nicaragua" = 6.50, "Uruguay" = 2.77, "India" = 5.14,
+  "Indonesia" = 7.40, "Egypt" = 7.18, "Thailand" = 7.40, "France" = 3.19,
+  "Spain" = 3.19, "United Kingdom" = 3.19,
+  "United States of America" = 12.13, "China" = 8.57, "Paraguay" = 8.72,
+  "Venezuela (Bolivarian Republic of)" = 6.50, "Ecuador" = 6.50,
+  "Bolivia (Plurinational State of)" = 6.50, "Guatemala" = 6.50,
+  "El Salvador" = 6.50
+)
+
+sle_women <- c(
+  "Brazil" = 14.70, "Colombia" = 15.15, "Mexico" = 15.15, "Argentina" = 4.15,
+  "Peru" = 15.15, "Puerto Rico" = 18.45, "Cuba" = 18.45,
+  "Dominican Republic" = 18.45, "Costa Rica" = 15.15, "Panama" = 15.15,
+  "Honduras" = 15.15, "Nicaragua" = 15.15, "Uruguay" = 6.27, "India" = 8.82,
+  "Indonesia" = 12.75, "Egypt" = 12.42, "Thailand" = 12.75, "France" = 6.52,
+  "Spain" = 6.52, "United Kingdom" = 6.52,
+  "United States of America" = 26.05, "China" = 14.86, "Paraguay" = 14.70,
+  "Venezuela (Bolivarian Republic of)" = 15.15, "Ecuador" = 15.15,
+  "Bolivia (Plurinational State of)" = 15.15, "Guatemala" = 15.15,
+  "El Salvador" = 15.15
+)
+
+sle_men <- c(
+  "Brazil" = 8.00, "Colombia" = 1.89, "Mexico" = 1.89, "Argentina" = 0.52,
+  "Peru" = 1.89, "Puerto Rico" = 2.31, "Cuba" = 2.31,
+  "Dominican Republic" = 2.31, "Costa Rica" = 1.89, "Panama" = 1.89,
+  "Honduras" = 1.89, "Nicaragua" = 1.89, "Uruguay" = 0.80, "India" = 1.53,
+  "Indonesia" = 7.40, "Egypt" = 7.18, "Thailand" = 7.40, "France" = 0.93,
+  "Spain" = 0.93, "United Kingdom" = 0.93,
+  "United States of America" = 3.58, "China" = 8.57, "Paraguay" = 8.72,
+  "Venezuela (Bolivarian Republic of)" = 1.89, "Ecuador" = 1.89,
+  "Bolivia (Plurinational State of)" = 1.89, "Guatemala" = 1.89,
+  "El Salvador" = 1.89
+)
+
+# Short display labels
+display_label <- c(
+  "United States of America"           = "USA",
+  "United Kingdom"                     = "UK",
+  "Venezuela (Bolivarian Republic of)" = "Venezuela",
+  "Bolivia (Plurinational State of)"   = "Bolivia"
+)
+
+# Build the three data frames (per 100,000)
+make_df <- function(dengue_vec, sle_vec) {
+  data.frame(
+    Country = names(dengue_vec),
+    Dengue  = as.numeric(dengue_vec) * 100000,
+    SLE     = as.numeric(sle_vec[names(dengue_vec)]),
+    stringsAsFactors = FALSE
+  ) |>
+    mutate(Country = recode(Country, !!!display_label))
+}
+
+dengue_sle_adults <- make_df(dengue_adults, sle_adults)
+dengue_sle_women  <- make_df(dengue_women,  sle_women)
+dengue_sle_men    <- make_df(dengue_men,    sle_men)
+
+knitr::kable(
+  dengue_sle_adults,
+  digits = 2,
+  caption = "Dengue (GBD 2023, 2023, all ages) vs SLE (Tian 2022, overall) — per 100,000"
+)
+
+
+knitr::kable(
+  dengue_sle_women,
+  digits = 2,
+  caption = "Dengue (GBD 2023, 2023, all ages) vs SLE (Tian 2022, female) — per 100,000"
+)
+
+
+knitr::kable(
+  dengue_sle_men,
+  digits = 2,
+  caption = "Dengue (GBD 2023, 2023, all ages) vs SLE (Tian 2022, male) — per 100,000"
+)
+
+
+ggplot(dengue_sle_adults, aes(x = Dengue, y = SLE)) +
+  geom_point(size = 3, color = "steelblue", alpha = 0.8) +
+  geom_text(aes(label = Country), size = 3, vjust = -0.7, check_overlap = TRUE) +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(
+    x = "Dengue cases per 100,000 (log scale)",
+    y = "SLE cases per 100,000 (log scale)",
+    title = "Global: Dengue vs SLE per 100,000 — All Adults",
+    subtitle = "Dengue: GBD 2023 (2023, all ages, both sexes). SLE: Tian et al. (2022), overall."
+  ) +
+  theme_minimal()
+
+
+ggplot(dengue_sle_men, aes(x = Dengue, y = SLE)) +
+  geom_point(size = 3, color = "darkgreen", alpha = 0.8) +
+  geom_text(aes(label = Country), size = 3, vjust = -0.7, check_overlap = TRUE) +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(
+    x = "Dengue cases per 100,000 (log scale)",
+    y = "SLE cases per 100,000 (log scale)",
+    title = "Global: Dengue vs SLE per 100,000 — Men",
+    subtitle = "Dengue: GBD 2023 (2023, all ages, male). SLE: Tian et al. (2022), male."
+  ) +
+  theme_minimal()
+
+
+
+ggplot(dengue_sle_women, aes(x = Dengue, y = SLE)) +
+  geom_point(size = 3, color = "purple4", alpha = 0.8) +
+  geom_text(aes(label = Country), size = 3, vjust = -0.7, check_overlap = TRUE) +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(
+    x = "Dengue cases per 100,000 (log scale)",
+    y = "SLE cases per 100,000 (log scale)",
+    title = "Global: Dengue vs SLE per 100,000 — Women",
+    subtitle = "Dengue: GBD 2023 (2023, all ages, female). SLE: Tian et al. (2022), female."
+  ) +
+  theme_minimal()
+
+cor_summary <- bind_rows(
+  data.frame(Group = "Adults",
+             Rho   = cor(dengue_sle_adults$Dengue, dengue_sle_adults$SLE, method = "spearman"),
+             P     = cor.test(dengue_sle_adults$Dengue, dengue_sle_adults$SLE, method = "spearman")$p.value,
+             N     = nrow(dengue_sle_adults)),
+  data.frame(Group = "Women",
+             Rho   = cor(dengue_sle_women$Dengue, dengue_sle_women$SLE, method = "spearman"),
+             P     = cor.test(dengue_sle_women$Dengue, dengue_sle_women$SLE, method = "spearman")$p.value,
+             N     = nrow(dengue_sle_women)),
+  data.frame(Group = "Men",
+             Rho   = cor(dengue_sle_men$Dengue, dengue_sle_men$SLE, method = "spearman"),
+             P     = cor.test(dengue_sle_men$Dengue, dengue_sle_men$SLE, method = "spearman")$p.value,
+             N     = nrow(dengue_sle_men))
+) |>
+  mutate(Rho = round(Rho, 3),
+         P   = format.pval(P, digits = 3))
+
+knitr::kable(
+  cor_summary,
+  caption = "Spearman Rank Correlation — global, by sex",
+  col.names = c("Group", "Spearman's Rho", "P-value", "N countries")
+)
+```
+
+<br>
+
+# Dataset Curation and Selection 
+```{r, results='asis'}
+dataset_standards <- tribble(
+  ~Standard, ~Dataset_ID, ~Description,
+  
+  "Lowest standard", "GSE43777", "0 controls + no gender",
+  "Lowest standard", "GSE38246", "9 controls + no gender",
+  "Lowest standard", "GSE17924", "0 controls + no gender",
+  "Lowest standard", "GSE96656", "9 controls",
+  
+  "Gold standard", "GSE157240", "21 samples + 20 controls",
+  "Gold standard", "GSE211567", "43 samples + 0 controls",
+  "Gold standard", "PRJEB67470", "28 samples + 18 controls",
+  
+  "Silver Standard", "GSE178240", "88 samples + no controls + no gender",
+  "Silver Standard", "GSE174482", "40 samples + no controls + no gender",
+  "Silver Standard", "GSE279208", "16 samples + 10 controls + no gender",
+  
+  "Copper standard", "GSE40628", "14 samples + 6 controls + no gender",
+  "Copper standard", "E-MTAB-3162", "30 samples + 15 controls no gender",
+  "Copper standard", "GSE51808", "47 samples + 9 controls + no gender",
+  "Copper standard", "GSE84331", "7 samples + 5 controls + no gender"
+)
+
+
+# Get a unique list of the standards in the order they appear
+standards_list <- unique(dataset_standards$Standard)
+
+# Loop through each standard
+for (std in standards_list) {
+  
+  # 1. Print a large, styled HTML header for the group
+  cat(sprintf("<h1 style='color: #2c3e50; border-bottom: 3px solid #2c3e50; padding-bottom: 5px; margin-top: 40px;'>%s</h1>\n", std))
+  
+  # 2. Filter the data for just this group
+  group_data <- dataset_standards %>%
+    filter(Standard == std) %>%
+    select(Dataset_ID, Description)
+  
+  # 3. Create and print the table
+  table_output <- kable(group_data, 
+                        col.names = c("Dataset ID", "Sample Details"),
+                        align = c("l", "l"),
+                        format = "html") %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed"), 
+                  full_width = FALSE,
+                  position = "left",
+                  font_size = 14) %>%
+    row_spec(0, bold = TRUE, background = "#f4f4f4") %>%
+    column_spec(1, bold = TRUE, color = "#0056b3")
+  
+  print(table_output)
+  
+  # Add spacing between groups
+  cat("<br><br>\n")
+}
+```
+
+
+<br>
+
+# Prof. Lourdes Peña-Castillo Question
+<br>
+
+###	Would  it be possible to do a cross-validation with MCO, so that it can be compared with machine learning approaches? For example, partition the data in k groups, run MCO in k-1 groups, use the best Pareto frontier to classify the group left out and then obtain performance metrics such as F1-score, precision and recall.
+<br>
