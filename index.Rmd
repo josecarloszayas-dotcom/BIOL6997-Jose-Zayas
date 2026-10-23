@@ -25,14 +25,14 @@ output:
 ## R Tutorials Prompts: 
 [HomeWork 1](Assigments/Assignment_1/Assignment-1.html)
 <br>
-[HomeWork 2](Assigments/Assignment_2/Assignment2.rmd)
+[HomeWork 2](Assigments/Assignment_2/Assignment2.html)
 <br>
 [HomeWork 3](Assigments/Assignment_3/RT3.html)
 
 
 ## Exams Submission:
 <br>
-[Examen 1](Exams/Exam_1/index.Rmd)
+[Examen 1](Exams/Exam_1/index.html)
 
 ## Research:
 - Hello Professor, I am praticing on R by trying to make my weekly research reports on here. I am currently attaching them below. If its innappropiate I will quickly delete it. 
