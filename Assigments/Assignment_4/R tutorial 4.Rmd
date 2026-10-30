@@ -1,0 +1,83 @@
+---
+title: "R_Tutorial_4"
+author: "Jose Zayas"
+date: "`r Sys.Date()`"
+output: html_document
+---
+# Assignment 4: t-test
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(lessR)
+library(readxl)
+library(BSDA)
+library(here)
+```
+
+```{r}
+butterflies <- read_excel(here("butterflies_pesticides.xlsx"))
+
+butterflies <- butterflies %>% 
+  mutate(Group = factor(Group, levels = c("group1", "group2")))
+
+butterflies <- butterflies %>% 
+  rename_with(~ gsub(" ", "", .x))
+
+control   <- butterflies %>% filter(Group == "group1") %>% pull(WingLength)
+pesticide <- butterflies %>% filter(Group == "group2") %>% pull(WingLength)
+```
+<br>
+
+#### Q1. Normality test / Prueba de normalidad (10pts)
+```{r}
+shapiro.test(control)
+shapiro.test(pesticide)
+```
+<br>
+
+#### Q2. Equality of variances test / Prueba de igualdad de varianzas (10pts)
+```{r}
+var.test(WingLength ~ Group, data = butterflies)
+```
+<br>
+
+#### Q3. Statistical test / Prueba estadística (20pts)
+```{r}
+t.test(filter(butterflies, Group == "group1")$WingLength, 
+       filter(butterflies, Group == "group2")$WingLength,
+       alternative = "two.sided",
+       mu = 0,
+       var.equal = FALSE)
+
+library(ggplot2)
+```
+<br>
+
+#### Q4. ggplot (20pts)
+```{r}
+ggplot(butterflies, aes(x = Group, y = WingLength, fill = Group)) +
+  geom_boxplot(alpha = 0.6, width = 0.5, outlier.shape = NA) +
+  geom_jitter(width = 0.1, alpha = 0.5, size = 2, color = "black") +
+  stat_summary(fun = mean, geom = "point", 
+               shape = 23, size = 4, fill = "white", color = "black") +
+  labs(
+    title = "Butterfly Wing Length by Pesticide Treatment",
+    x = "Treatment Group",
+    y = "Wing Length (mm)",
+    fill = "Group"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none")
+```
+
+
+#### Q5. Summary paragraph / Párrafo de resumen (40pts) - Write one concise paragraph summarizing your research objective, methods, statistical results, and interpretation of the findings, including whether the observed difference is statistically significant and biologically meaningful.
+<br>
+
+##### Research Objective: The objective of this study was to determine whether exposure to pesticides during the larval stage impacts butterfly development, specifically by comparing the wing lengths of a control group vs a pesticide-treated group.
+
+##### Methods:  We analyzed the wing length data for both groups. Both were tested using the Shapiro-Wilk test for normality and the F-test (var.test) for equality of variances. We then conducted a standard two-sample t-test to compare the group means.
+
+##### Results: The control group had a mean wing length of 632.18 mm, while the pesticide-treated group had a mean wing length of 593.49 mm. The t-test revealed a statistically significant difference between the two groups (t = 3.98, df = 78, p < 0.001), with the pesticide group exhibiting shorter wings.
+
+##### Interpretation: The results indicate a statistically significant difference in wing length between the two groups. Because the pesticide-treated butterflies had significantly shorter wings, 40mm on average, this finding is biologically meaningful. Shorter wing length in butterflies is often associated with reduced flight performance, which could negatively impact their ability to forage, find mates, and disperse. Conclusively, the data suggests that larval exposure to pesticides has a detrimental effect on butterfly development.
+
