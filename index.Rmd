@@ -49,3 +49,7 @@ output:
 <br>
 [Weekly Report 6](Invest/Weeklyreport6.html)
 
+<br>
+
+[RNAseqDownload](Invest/Step4RnaseqDownload.html)
+

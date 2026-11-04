@@ -1,0 +1,120 @@
+---
+title: 'Step 4: RNAseq Download'
+author: "Jose Zayas"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+## 4. Downloading RNA-seq Data from GEO/SRA (Example: GSE161199)
+
+Public RNA-seq datasets we look for are hosted in GEO (Gene Expression Omnibus) and mirrored in the Sequence Read Archive (SRA). Each GEO series (e.g., GSE161199) corresponds to one SRA study (SRP) containing multiple run accessions (SRR). We will use NCBI tools (prefetch and fasterq-dump) to download data.
+
+### Option A: Using pysradb (the manual's original method)
+
+Create a metadata file using pysradb:
+
+```bash
+cd meta
+
+# Convert GEO series to SRA project ID (SRP)
+pysradb gse-to-srp GSE161199 > gse_to_srp.tsv
+cat gse_to_srp.tsv    # look at the SRP number, then press q to quit
+
+# Extract run accessions (SRR) for all samples
+pysradb srp-to-srr SRP292025 > srr_table.tsv
+awk 'NR>1{print $1}' srr_table.tsv > SraAccList.txt
+
+cd ..
+```
+
+`pysradb gse-to-srp` takes a GEO series and returns the SRA project (SRP). We save it to `gse_to_srp.tsv` for reference. This step can be skipped by manually looking for the SRP number on the website.
+
+`pysradb srp-to-srr` converts the project to run (SRR) accessions; we save the run IDs in `SraAccList.txt` (one per line). These are the files we will download.
+
+`awk 'NR>1{print $1}'` prints the first column (SRR) after skipping the header.
+
+> **Note:** `pysradb` depends on NCBI's API responding correctly. In some environments it fails silently, returning an empty file with no error message. If that happens, use Option B below.
+
+---
+
+### Option B: Using the NCBI website (reliable fallback, and needed for subsets)
+
+If `pysradb` fails, or if you only want **a subset of samples** (e.g., only the Dengue samples out of hundreds), download the metadata directly from NCBI instead.
+
+**Step 1 — Get the metadata file from NCBI**
+
+1. Find the SRA project ID. You can use `pysradb gse-to-srp` for this (it usually works even when `metadata` fails), or look it up on the GEO page.
+2. Open the **SRA Run Selector** in your browser:
+   ```
+   https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRPxxxxxx
+   ```
+   (Replace `SRPxxxxxx` with the actual project ID.)
+3. Use the search box to filter by keyword (e.g., `Dengue`).
+4. Click **"Download" → "Metadata"**.
+5. Save the file (usually named `SraRunTable.csv`) to your computer.
+
+**Step 2 — Upload it to the server**
+
+From your **local machine's terminal** (not the SSH session):
+
+```bash
+scp ~/Downloads/SraRunTable.csv undergrad@136.145.140.138:/mnt/transcriptomics/ZAYAS/GSE57/
+```
+
+**Step 3 — Extract the SRR numbers**
+
+On the server, in your project folder:
+
+```bash
+grep "Dengue" SraRunTable.csv | cut -d',' -f1 > SraAccList_dengue.txt
+sed -i '1d' SraAccList_dengue.txt
+cat SraAccList_dengue.txt
+```
+
+- `grep "Dengue"` — filters the CSV to only Dengue samples.
+- `cut -d',' -f1` — splits each line on commas and keeps only field 1 (the SRR ID).
+- `sed -i '1d'` — deletes the header row in-place.
+
+You should now have a plain text file with one SRR number per line — exactly what `prefetch` expects.
+
+---
+
+### Downloading the files
+
+Whichever method you used to build the list, the download step is the same:
+
+```bash
+conda activate rnaseq
+mkdir -p sra
+prefetch --option-file SraAccList_dengue.txt --max-size 100G --output-directory sra
+```
+
+- `--option-file` reads SRR IDs from your list.
+- `--max-size 100G` refuses to download anything larger than 100 GB (safety limit).
+- `--output-directory sra` puts downloaded files into the `sra/` folder.
+
+`prefetch` creates one sub-folder per SRR (e.g., `sra/SRR21130591/SRR21130591.sra`).
+
+### Running it in the background
+
+Downloads can take hours. To prevent your laptop sleeping or Wi-Fi dropping from killing the job, run it inside `tmux`:
+
+```bash
+tmux new -s download
+# run prefetch here, then press Ctrl+B, release, press D to detach
+```
+
+Come back later with:
+
+```bash
+tmux attach -t download
+```
+
+### Troubleshooting
+
+- **0 files downloaded / finishes instantly:** your SRR list is empty. Check with `wc -l SraAccList_dengue.txt`.
+- **`lock exists while copying file`:** a previous download was interrupted. Fix with `rm -rf sra/*/*.lock` and re-run `prefetch`.
+- **One file is suspiciously small:** incomplete download. Delete the folder, put the SRR in a one-line file, and re-run `prefetch` for just that ID.
+- **Verify integrity:** `vdb-validate sra/SRRxxxxxxx/SRRxxxxxxx.sra` should print `is consistent`.
+

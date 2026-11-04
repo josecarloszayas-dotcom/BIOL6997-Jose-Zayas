@@ -46,10 +46,6 @@ adults_latest <- latest_per_country(adults)
 women_latest  <- latest_per_country(women)
 men_latest    <- latest_per_country(men)
 
-# Dengue val is a proportion (Percent metric). Convert to per 100,000:
-dengue_sle <- dengue_sle |>
-  mutate(dengue_per100k = val * 100000)
-
 # View results
 print(adults_latest)
 print(women_latest)
