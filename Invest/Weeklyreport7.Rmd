@@ -1,0 +1,181 @@
+---
+title: "WeeklyReport7"
+author: "Jose Zayas"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## Dengue on the Rise
+
+Dengue virus (DENV) represents a growing global public health threat, with its incidence and geographic range expanding significantly in recent decades. This rise is driven by a confluence of factors, including climate change, which expands the habitat of the *Aedes* mosquito vectors, and increased global travel and trade, which facilitate the spread of the virus to non-endemic regions (Zhou et al., 2025). **[The World Health Organization has estimated that dengue incidence increased roughly thirty-fold over the past fifty years, and current projections place nearly half of the world's population at risk of infection]{.underline}** (Wong et al., 2020). As a result, arboviral infections like dengue are no longer confined to tropical regions but pose a risk to an increasing portion of the world's population.
+
+Dengue is clinically heterogeneous. Most infections are asymptomatic or present as a self-limiting febrile illness, yet a significant minority progress to severe forms---dengue hemorrhagic fever (DHF) and dengue shock syndrome (DSS)---characterized by plasma leakage, thrombocytopenia, and hemorrhage (Nielsen, 2009). **[This variability has long pointed to the host immune response, rather than the virus alone, as a principal determinant of disease outcome]{.underline}**. Understanding how dengue engages and dysregulates the immune system is therefore central to explaining both its acute severity and its lasting consequences.
+<br>
+
+## Dengue Immunopathogenesis 
+### Molecular Mimicry - Antibody Dependent Enhancement (ADE)
+
+The pathogenesis of dengue is a complex interplay between direct viral activity and the host's immune response. A key challenge in controlling the virus stems from its structural similarity to human proteins. This phenomenon, known as molecular mimicry, can lead to the generation of cross-reactive antibodies that mistakenly target the body's own tissues, such as platelets and endothelial cells, contributing to the disease's severity (Zhou et al., 2025). 
+
+Beyond molecular mimicry, the immune system's response to dengue can be exploited in other ways. In a secondary infection with a different dengue serotype, pre-existing, non-neutralizing antibodies from the first infection can bind to the new virus and facilitate its entry into host cells via Fc receptors, a process known as Antibody-Dependent Enhancement (ADE). **[Rather than neutralizing the virus, these cross-reactive antibodies subvert the immune system's defenses and actively enhance viral infectivity]{.underline}**, making ADE a major risk factor for severe dengue (Garcia et al., 2010). As illustrated in **Figure 1**, this process can trigger a cascade of pathological effects---including plasma leakage, thrombocytopenia, and hemorrhage---driven by autoantibody-mediated damage to endothelial cells, platelets, and coagulatory molecules (Zhou et al., 2025).
+<br>
+```{r figure-1, echo=FALSE, fig.cap="**Figure 1**. Autoantibody-mediated immunopathogenesis in DENV infection. Adapted from Zhou et al. (2025).", out.width="100%"}
+knitr::include_graphics("~/Desktop/DengueImmunopath.png")
+```
+<br> 
+**Figure 2** llustrates the kinetics of this process, contrasting a primary infection with a secondary, heterologous infection. <u>During a secondary infection, pre-existing immunity alters the timeline: viraemia is often shorter, but the activation of cross-reactive memory T cells and the presence of sub-neutralizing antibodies trigger an earlier and more intense cytokine cascade, driving the vascular permeability characteristic of severe dengue</u> (St. John & Rathore, 2020).
+```{r figure-2, echo=FALSE, fig.cap="**Figure 2**. Time course of acute infection and immune responses during symptomatic dengue virus infection", out.width="100%"}
+knitr::include_graphics("~/Desktop/DenvGraph.png")
+```
+<br>
+
+### Complement and miRNAs
+These cross-reactive antibodies do not act in isolation. Together with viral proteins such as the non-structural protein NS1, they activate the complement cascade, generating anaphylatoxins (**C3a and C5a**) that increase vascular permeability, recruit inflammatory cells, and amplify the release of pro-inflammatory cytokines such as TNF-$\alpha$ and IL-6; <u>NS1 has further been shown to bind directly to endothelial and hepatic surfaces and to trigger complement attack complexes in a dose-dependent manner</u> (Nielsen, 2009). 
+
+At the same time that the host is deploying antibodies and T cells, it is also deploying post-transcriptional regulators—microRNAs (miRNAs). Certain miRNAs, such as miR-30e and the miR-34 family, reinforce the type I interferon response and suppress DENV replication. However, DENV also exploits proviral miRNAs. For instance, miR-146a dampens interferon induction by targeting TRAF6, while **miR-21 is upregulated during infection** and targets key tumor suppressor and immune-regulatory genes (Wong et al., 2020). <u>Crucially, these dysregulated miRNAs do not just impact acute viral replication, they are increasingly recognized as master regulators of autoimmune pathogenesis.</u> Among them, miR-21 is particularly relevant: it is induced by dengue and required for efficient viral replication (Kanokudom et al., 2017), and in SLE it is elevated in PBMCs and inversely correlated with PTEN, a validated direct target (Liu et al., 2021). **Complement activation, T-cell-driven cytokine release, and miRNA-mediated regulation thus form an interacting network in which the immune response itself becomes a principal driver of pathology.**
+
+## How Dengue Drives Autoimmunity
+
+If the acute response already involves cross-reactive antibodies, complement amplification, and dysregulated cytokine control, a natural question follows: what happens when this response does not resolve after the virus is cleared---and can dengue itself initiate autoimmunity? While the acute pathogenesis of dengue is well-characterized, the long-term immunological consequences of infection are less understood. **[Several lines of evidence suggest that dengue can drive a sustained autoimmune-like state through mechanisms that extend beyond the acute phase]{.underline}:**
+
+- **First**, the molecular mimicry described earlier does not necessarily end with viral clearance. Anti-NS1 antibodies generated during infection have been shown to cross-react with host fibrinogen, thrombocytes, and endothelial cells, and to induce apoptosis in endothelial cells through an iNOS-dependent pathway (Nielsen, 2009). **[Because these autoantibodies recognize self-epitopes rather than viral ones, their production may persist beyond the period of active infection]{.underline}.**
+
+- **Second**, the immune complexes formed during acute infection may fail to clear efficiently, and this failure appears to be genetically modulated. The Fc$\gamma$RIIa receptor, expressed on monocytes, macrophages, and dendritic cells, mediates the binding and clearance of IgG-containing immune complexes, and **[a single-nucleotide polymorphism at position 131 determines its binding affinity]{.underline}**: the arginine (R) variant binds IgG1 with higher affinity, whereas the histidine (H) variant binds it more weakly (Garcia et al., 2010).
+
+<br>
+**[Garcia et al. (2010) found that the HH genotype was significantly associated with symptom persistence when compared with the HR and RR genotypes combined]{.underline}**, and that this genotype was specifically linked to joint, muscle, or bone pain and to neurological complaints. [Reduced IgG binding in HH individuals is thought to impair the processing and clearance of circulating immune complexes, allowing them to accumulate and deposit in tissues, where they sustain complement activation and inflammatory signaling]{.underline}.
+<br>
+
+Table: Fc$\gamma$RIIa-131 genotype and persistence of clinical symptoms two years after dengue infection (Garcia et al., 2010)
+
+| Genotype | Symptomatic | Asymptomatic | Total |
+|:---------|:-----------:|:------------:|:-----:|
+| HH       | 22 (73.3%)  | 8 (26.7%)    | 30    |
+| HR       | 21 (47.7%)  | 23 (52.3%)   | 44    |
+| RR       | 12 (52.2%)  | 11 (47.8%)   | 23    |
+| **Total**| **55**      | **42**       | **97**|
+
+ Adapted from Garcia et al. (2010), Table 3.
+ 
+ <br>
+ 
+```{r, echo = FALSE}
+# Sample R code for your ggplot
+library(ggplot2)
+
+# Data from Garcia et al., 2010
+fc_data <- data.frame(
+  Genotype = factor(c("HH", "HR", "RR"), levels = c("HH", "HR", "RR")),
+  Status = rep(c("Symptomatic", "Asymptomatic"), each = 3),
+  Percentage = c(73.3, 47.7, 52.2, 26.7, 52.3, 47.8)
+)
+
+ggplot(fc_data, aes(x = Genotype, y = Percentage, fill = Status)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black") +
+  scale_fill_manual(values = c("Symptomatic" = "#D55E00", "Asymptomatic" = "#0072B2")) +
+  labs(
+    title = "**FcγRIIa-131 Genotype and Persistent Dengue Symptoms**",
+    subtitle = "Two years post-infection (p = 0.027 for HH vs HR+RR)",
+    x = "FcγRIIa Genotype",
+    y = "Percentage of Patients",
+    fill = "Clinical Status"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+<br>
+
+- **Third**, this unresolved immune complex burden feeds directly into the complement and cytokine amplification described earlier. Persistent immune complexes and circulating NS1 can continue to generate anaphylatoxins and pro-inflammatory cytokines, while dysregulated miRNA control of interferon and cytokine output may prevent the normal transition from an acute inflammatory response to immune resolution (Nielsen, 2009; Wong et al., 2020). In line with this, **[Garcia et al. (2010) reported that individuals with elevated immune complexes had significantly higher anti-dengue IgG titers]{.underline}**, and that elevated C-reactive protein and immune complexes were common among symptomatic individuals.
+
+### The Etiology of Persistent Symptoms and the Female Predominance
+
+Consistent with these mechanisms, a significant proportion of individuals who recover from acute dengue report persistent clinical symptoms—such as muscle pain, arthralgia, and fatigue—for months or even years after their initial illness. **[Importantly, these persistent symptoms have been associated with elevated levels of autoimmune biomarkers, including antinuclear antibodies (ANA) and immune complexes (IC), and with a higher titer of anti-dengue IgG antibodies]{.underline}** (Garcia et al., 2010). This suggests that the initial viral infection may trigger a sustained autoimmune-like disturbance in some individuals. <u>Given the overlapping miRNA signatures, complement activation, and antibody cross-reactivity, **dengue serves as a compelling environmental trigger for the onset of autoimmune conditions**—most notably, the range of autoimmune and neurological complications now reported in association with the virus.</u>
+
+While the acute phase of dengue is characterized by a robust inflammatory response, the etiology of persistent symptoms (often termed post-infectious fatigue or PIF) is increasingly understood as a failure of immune resolution. A recent systematic review and meta-analysis by Hertanti et al. (2024) found that <u>the pooled global prevalence of PIF following dengue is 20.0%</u>, with fatigue being the most commonly reported lingering symptom. 
+
+Large-scale epidemiological data further support this link between dengue and subsequent autoimmunity. As shown in **Figure 3**, a nationwide cohort study in Taiwan demonstrated that patients with laboratory-confirmed dengue had a significantly higher cumulative incidence of overall autoimmune diseases compared to matched controls (Log-rank test, p < 0.0001), with the risk for autoimmune encephalomyelitis showing a particularly sharp divergence in the years following infection (Shih et al., 2023).
+
+```{r figure-3, echo=FALSE, fig.cap="Figure 3. Kaplan-Meier curves for the cumulative incidence of autoimmune disease (A) and autoimmune encephalomyelitis (B) between the dengue and non-dengue groups. Adapted from Shih et al. (2023).", out.width="100%"}
+# Replace with the actual filename of the graph you saved
+knitr::include_graphics("~/Desktop/GraphDenvLong.png")
+```
+<br>
+<u>**Critically, this subset is overwhelmingly female.**</u>  In the Garcia et al. (2010) cohort, 65.7% of women reported persistent symptoms two years post-infection, compared to only 36.7% of men. The meta-analysis by Hertanti et al. (2024) corroborates this, identifying female sex as a significant risk factor for developing PIF, as detailed in Table 2. This aligns not only with the clinical data but also with the bioinformatics output from our transcriptomic analysis, where female dengue networks were exclusively dominated by interferon-stimulated genes (ISGs) and chemokines.
+
+```{r, echo=FALSE}
+# Creating the dataframe for the PIF table
+pif_data <- data.frame(
+  `Risk Factor` = c("Female sex", "Pre-existing comorbidities", "Dengue hemorrhagic fever (DHF)"),
+  `Pooled Odds Ratio (OR)` = c("1.65", "2.14", "1.80"),
+  `95% CI` = c("1.27 – 2.14", "1.36 – 3.38", "1.02 – 3.16"),
+  `p-value` = c("0.0002", "0.0010", "0.042"),
+  check.names = FALSE
+)
+
+# Rendering the table
+knitr::kable(pif_data, 
+             caption = "Table 2. Risk factors for post-infectious fatigue (PIF) among dengue patients (Hertanti et al., 2024).",
+             align = c("l", "c", "c", "c"))
+```
+
+The biological basis for this sex disparity lies in the fundamental differences in male and female immune responses. [**Women generally mount stronger innate and adaptive immune responses than men, producing higher antibody titers and more robust T-cell activation**]{.underline} (Hertanti et al., 2024). While this provides a survival advantage against acute infections, it also creates a double-edged sword. **Estrogens are known to stimulate B-cell activation and antibody production**, which can prolong the immune response and dramatically increase the likelihood of autoimmune reactions (Li et al., 2025). Therefore, the very mechanisms that help a female host clear the dengue virus—such as the intense, ISG-driven antiviral state—may also predispose her to the prolonged, self-perpetuating immune activation that characterizes post-infectious fatigue and autoimmunity.
+
+
+### The Global Burden of Autoimmunity in Women
+
+This female-specific vulnerability to immune dysregulation is not unique to dengue; it is a defining feature of autoimmune diseases (ADs) globally. <u>**More than 80% of individuals diagnosed with autoimmune diseases worldwide are women**</u> (Li et al., 2025). The global prevalence of ADs in the working-age population is staggering, with women exhibiting a prevalence rate of 1,841.96 per 100,000, compared to 1,448.6 per 100,000 in men (Li et al., 2025). 
+
+The reasons for this profound sex bias are multifactorial, involving a complex interplay of genetics, hormones, and environmental triggers. From an immunological standpoint, estrogen has been shown to modulate the immune system by promoting Th2 cytokine production (such as IL-4 and IL-10) while suppressing pro-inflammatory Th1/Th17 cytokines (Li et al., 2025). This hormonal modulation, combined with the presence of two X chromosomes (which carry a high density of immune-related genes), creates a hyper-responsive immune environment. **[When an environmental trigger like dengue virus introduces a potent antigenic challenge and induces cross-reactive antibodies, the female immune system is more likely to mount an exaggerated response that fails to resolve, leading to the loss of self-tolerance]{.underline}.**
+
+Furthermore, the clinical presentation of severe dengue itself may differ by sex. While the Garcia et al. (2010) data focused on long-term sequelae, acute cytokine studies show that during the acute phase, **women with dengue hemorrhagic fever (DHF) caused by DENV2 exhibit significantly higher levels of IL-12p70 and TNF-$\alpha$ compared to their male counterparts** (de la Cruz Hernández et al., 2011). These elevated pro-inflammatory signals during the acute phase may set the stage for the chronic immune dysregulation observed years later. 
+
+Therefore, when we examine the transcriptomic outputs showing female-specific ISG dominance, the clinical data showing higher rates of PIF in women, and the global epidemiological data showing that 80% of autoimmune patients are women, a coherent narrative emerges. **<u>Dengue infection acts as a potent environmental trigger that exploits the naturally hyper-responsive female immune system, pushing it past the threshold of tolerance and into the realm of chronic autoimmunity</u>.** The economic and public health implications of this are severe, as autoimmune diseases significantly reduce labor force participation and quality of life, particularly in the working-age population (Li et al., 2025).
+<br>
+
+## Synthesizing the Mechanisms—A Female-Specific miR-21/PTEN Circuit
+
+The preceding sections have assembled the pieces of a coherent argument. Dengue generates cross-reactive antibodies through molecular mimicry and ADE. These antibodies, together with NS1, activate complement and sustain a pro-inflammatory cytokine environment. The FcγRIIa-131 HH genotype impairs immune complex clearance, allowing these complexes to persist and deposit in tissues. Persistent symptoms are overwhelmingly female, and women globally carry more than 80% of the autoimmune disease burden. **What remains is to specify the molecular mechanism by which the female dengue response fails to resolve.**
+
+The miRNA section introduced miR-21 as a proviral and autoimmune-relevant regulator. Here we discuss its role as the central node of a female-specific brake-failure circuit. Three independent lines of evidence converge on miR-21 and its target PTEN.
+
+- **First** , dengue induces miR-21. In DENV-2-infected HepG2 cells, miR-21 is differentially expressed at all time points examined, and anti-miR-21 treatment significantly reduces viral production, establishing miR-21 as a positive regulator of dengue replication (Kanokudom et al., 2017). miR-21 has since been reported to be consistently upregulated in severe dengue cases (Datta & Ghosh, 2025).
+
+- **Second**, miR-21 represses PTEN in SLE. In SLE PBMCs, miR-21 is significantly elevated and inversely correlated with PTEN, a validated direct target (Liu et al., 2021). In T cells, miR-21 targeting of PTEN and PDCD4 lowers the threshold for self-reactivity.
+
+- **Third**, PTEN is an interferon brake, but its dysfunction is not simple loss. PTEN is required for efficient IRF3-mediated IFN-β induction (Li et al., 2016, Nature Immunology). At first glance, this appears to contradict the hypothesis that miR-21-mediated PTEN repression would amplify interferon. However, PTEN can be functionally dysregulated without being quantitatively decreased. PTEN nuclear entry depends on monoubiquitination at K13/K289 (Chakraborty et al., 2023), and RNF138 disrupts the PTEN–IRF3 interaction without necessarily reducing total PTEN levels (Zeng et al., 2023). Moreover, PTEN loss can trigger a chronic interferon signature through endogenous retroviral element derepression, with STAT1 hyperactivation as the hallmark (Wang et al., 2026, Genes & Development). This reconciles the contradiction: **PTEN dysregulation does not amplify canonical IRF3-driven interferon; it switches the interferon program from an acute, IRF3-dependent response to a chronic, ERV/nucleic acid-sensing-driven tone.**
+
+<br>
+
+**RSAD2 as the downstream amplifier: **
+
+  - RSAD2 (Viperin) sits at the center of the female Dengue MST networks identified in our transcriptomic analysis (edge weights >0.97 with IFI44L and ISG15) and is a pathogenic interferon-stimulated gene in SLE (Zhao et al., 2025). [If miR-21 functionally dysregulates PTEN, RSAD2 is the gene most sensitive to the resulting interferon dysregulation.]{.underline}
+  
+<br>
+
+  **Together, these findings support a testable, female-specific circuit:**
+
+<table style="border-collapse: collapse; border: none; margin: 20px auto; text-align: center; font-size: 1.1em;">
+  <tr><td style="border: none; padding: 5px;"><strong>Dengue Infection</strong></td></tr>
+  <tr><td style="border: none; padding: 2px; color: #666;">↓</td></tr>
+  <tr><td style="border: none; padding: 5px;"><strong>miR-21 Upregulation</strong></td></tr>
+  <tr><td style="border: none; padding: 2px; color: #666;">↓</td></tr>
+  <tr><td style="border: none; padding: 5px;"><strong>PTEN Functional Dysregulation</strong><br><em>(mislocalization, altered modification, or disrupted PTEN–IRF3 coupling)</em></td></tr>
+  <tr><td style="border: none; padding: 2px; color: #666;">↓</td></tr>
+  <tr><td style="border: none; padding: 5px;"><strong>Impaired Acute IRF3-Dependent Interferon Resolution</strong></td></tr>
+  <tr><td style="border: none; padding: 2px; color: #666;">↓</td></tr>
+  <tr><td style="border: none; padding: 5px;"><strong>Compensatory Chronic ERV/Nucleic Acid-Sensing Interferon Tone</strong></td></tr>
+  <tr><td style="border: none; padding: 2px; color: #666;">↓</td></tr>
+  <tr><td style="border: none; padding: 5px;"><strong>Sustained RSAD2/ISG15 Amplification</strong></td></tr>
+  <tr><td style="border: none; padding: 2px; color: #666;">↓</td></tr>
+  <tr><td style="border: none; padding: 5px; color: #D55E00;"><strong>SLE-Like Chronic Interferon State</strong></td></tr>
+</table>
+
+[This circuit does not require PTEN to be "repressed." It requires PTEN to be functionally uncoupled from the IRF3 axis—a state that can occur without changes in total protein abundanc]{.underline}. It also explains why the female Dengue transcriptome is architecturally different from the male: **female networks are exclusively ISG- and chemokine-dominated, lacking the proliferative and plasma-cell modules that males engage. The female response is locked in an ISG-chemokine-complement mode because the brake that would terminate it—PTEN—is functionally compromised.**
+
+The global burden of autoimmunity in women is thus not merely a background statistic. It is the population-level readout of a regulatory architecture that, when challenged by an acute RNA virus like dengue, fails at a specific molecular checkpoint. The miR-21/PTEN axis identifies that checkpoint.
+<br>
+
+## Conclusion
+
+Dengue infection acts as a potent environmental trigger that exploits the naturally hyper-responsive female immune system, pushing it past the threshold of tolerance. The miR-21/PTEN axis provides a specific, falsifiable mechanism for how this transition may occur: dengue-induced miR-21 functionally dysregulates PTEN, impairing the resolution of acute interferon signaling and permitting a chronic ERV/nucleic acid-sensing interferon tone to persist, with RSAD2 as the downstream amplification node. This generates a clear prediction for the next phase: in a prospective dengue cohort, female patients who later develop autoantibodies should show higher acute miR-21 expression, altered PTEN localization (not necessarily lower PTEN abundance), and sustained RSAD2/ISG15 expression at convalescence compared to female patients who do not develop autoimmunity.
+

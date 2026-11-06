@@ -48,6 +48,8 @@ output:
 [Weekly Report 4](Invest/Weeklyreport5.html) 
 <br>
 [Weekly Report 6](Invest/Weeklyreport6.html)
+<br>
+[Weekly Report 7](Invest/Weeklyreport7.html)
 
 <br>
 
